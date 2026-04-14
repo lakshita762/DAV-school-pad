@@ -5,6 +5,7 @@ import '../api/models/config_model.dart';
 import '../extras/color.dart';
 import '../extras/dimension.dart';
 import '../extras/string.dart';
+import 'login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -71,14 +72,14 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (!mounted) return;
 
-     /** Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: AppDimens.durationTransition),
           pageBuilder: (_, __, ___) => Login(items: items),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
-      );**/
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {

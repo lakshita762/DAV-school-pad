@@ -1,11 +1,11 @@
 class LoginRequest {
-  final String admissionNo;
+  final String admNo;
   final String dob;
 
-  LoginRequest({required this.admissionNo, required this.dob});
+  LoginRequest({required this.admNo, required this.dob});
 
   Map<String, dynamic> toJson() => {
-    'admissionNo': admissionNo,
+    'adm_no': admNo,
     'dob': dob,
   };
 }

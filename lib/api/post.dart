@@ -43,7 +43,7 @@ class Post {
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
         final message = e.response?.data['message'] ?? 'Something went wrong';
-        if (statusCode == 401) return Exception(Strings.errorServer(401, 'Invalid email or password.'));
+        if (statusCode == 401) return Exception(Strings.errorServer(401, 'Invalid admission number or DOB.'));
         if (statusCode == 422) return Exception(Strings.errorServer(422, 'Validation error: $message'));
         return Exception('Server error ($statusCode): $message');
       case DioExceptionType.connectionError:

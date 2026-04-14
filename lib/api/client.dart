@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static const String _baseUrl = 'https://google.com';
+  static const String _baseUrl = 'http://school.loc';
 
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;

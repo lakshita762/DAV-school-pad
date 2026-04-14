@@ -1,5 +1,6 @@
-import 'package:dav_school_app/screen/splash_screen.dart';
+// import 'package:dav_school_app/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:dav_school_app/screen/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const SplashScreen(),
+      home: const Login(items: []),
     );
   }
 }
