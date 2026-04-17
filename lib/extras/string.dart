@@ -16,5 +16,7 @@ class Strings {
       'Server error ($code): $data';
 
   static const String btnRetry           = 'Retry';
+  static const String tokenStorageKey           = 'auth_bearer_token';
+
 
 }

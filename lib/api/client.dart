@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static const String _baseUrl = 'http://school.loc';
+  static String baseUrl = 'http://school.loc';
 
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;
@@ -11,7 +11,7 @@ class DioClient {
   DioClient._internal() {
     dio = Dio(
       BaseOptions(
-        baseUrl: _baseUrl,
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {
@@ -38,5 +38,10 @@ class DioClient {
         },
       ),
     );
+  }
+
+  void changeBaseUrl(String newUrl) {
+    baseUrl = newUrl;
+    dio.options.baseUrl = newUrl;
   }
 }

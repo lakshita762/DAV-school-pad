@@ -1,10 +1,12 @@
 import 'package:dav_school_app/api/post.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/models/config_model.dart';
 import '../extras/color.dart';
 import '../extras/dimension.dart';
 import '../extras/string.dart';
+import 'home.dart';
 import 'login.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -59,33 +61,23 @@ class _SplashScreenState extends State<SplashScreen>
     final Future<void> minDelay =
     Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
 
-    try {
-      setState(() => _statusMessage = Strings.statusFetching);
-
-      final results = await Future.wait([_post.fetchConfig(), minDelay]);
-      final List<ConfigModel> items = results[0] as List<ConfigModel>;
-
-      if (!mounted) return;
-
-      setState(() => _statusMessage = Strings.statusLoaded(items.length));
-      await Future.delayed(Duration(milliseconds: AppDimens.durationStatusDelay));
-
-      if (!mounted) return;
-
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString(Strings.tokenStorageKey) ?? '';
+    if (token.isEmpty) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: AppDimens.durationTransition),
-          pageBuilder: (_, __, ___) => Login(items: items),
+          pageBuilder: (_, __, ___) => Login(items: []),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
         ),
       );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _hasError = true;
-        _statusMessage = e.toString().replaceAll('Exception: ', '');
-      });
+    }else{
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (BuildContext context) => const HomePage(),
+        ),
+      );
     }
   }
 

@@ -1,4 +1,7 @@
 // import 'package:dav_school_app/screen/splash_screen.dart';
+import 'package:dav_school_app/screen/payment_screen.dart';
+import 'package:dav_school_app/screen/splash_screen.dart';
+import 'package:dav_school_app/services/hash_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dav_school_app/screen/login.dart';
 
@@ -32,8 +35,11 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Login(items: []),
+      home: SplashScreen(),
     );
   }
 }
+
+
+
 

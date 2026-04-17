@@ -1,5 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+
     <application
+        tools:replace="android:label"
         android:label="dav_school_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -30,6 +36,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="payu_debug_mode_enabled" android:value="true"/>
+        <meta-data android:name="payu_web_service_url" android:value="https://test.payu.in"/>
+        <meta-data android:name="payu_post_url" android:value="https://test.payu.in"/>
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

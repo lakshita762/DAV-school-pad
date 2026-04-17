@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class StudentDetailResponse {
   final bool success;
   final String message;
@@ -54,12 +56,18 @@ class StudentDetailData {
   final double totalAmount;
   final double attendancePercent;
   final String dueDate;
+  final String adm_no;
+  final String active;
+  final String email;
+  final String conveyance, hostel;
 
   StudentDetailData({
     required this.studentName,
     required this.studentId,
     required this.admissionDate,
     required this.className,
+    required this.adm_no,
+    required this.active,
     required this.section,
     required this.category,
     required this.rollNo,
@@ -78,6 +86,9 @@ class StudentDetailData {
     required this.totalAmount,
     required this.attendancePercent,
     required this.dueDate,
+    required this.email,
+    required this.conveyance,
+    required this.hostel
   });
 
   double get paidProgress {
@@ -92,12 +103,27 @@ class StudentDetailData {
 
   factory StudentDetailData.fromJson(Map<String, dynamic> json) {
     return StudentDetailData(
+      studentId: _firstString(json, const ['student_id', 'admission_no', 'id']),
       studentName: _firstString(json, const [
         'student_name',
         'name',
         'full_name',
       ]),
-      studentId: _firstString(json, const ['student_id', 'admission_no', 'id']),
+      adm_no: _firstString(json, const ['adm_no']),
+      active: _firstString(json, const ['active']),
+      dob: _firstString(json, const ['dob', 'date_of_birth']),
+      fatherName: _firstString(
+        json,
+        const ['father_name', 'father', 'fathers_name'],
+      ),
+      motherName: _firstString(
+        json,
+        const ['mother_name', 'mother', 'mothers_name'],
+      ),
+      email: _firstString(json, const ['email']),
+      contact: _firstString(json, const ['contact', 'phone', 'mobile']),
+      conveyance: _firstString(json, const ['conveyance']),
+      hostel: _firstString(json, const ['hostel']),
       admissionDate: _firstString(
         json,
         const ['admission_date', 'date_of_admission', 'admissionDate'],
@@ -109,23 +135,16 @@ class StudentDetailData {
       section: _firstString(json, const ['section']),
       category: _firstString(json, const ['category']),
       rollNo: _firstString(json, const ['roll_no', 'roll_number']),
-      fatherName: _firstString(
-        json,
-        const ['father_name', 'father', 'fathers_name'],
-      ),
-      motherName: _firstString(
-        json,
-        const ['mother_name', 'mother', 'mothers_name'],
-      ),
+
       schoolName: _firstString(json, const ['school_name', 'school']),
       board: _firstString(json, const ['board']),
       academicYear: _firstString(json, const ['academic_year', 'year']),
       teacherName: _firstString(json, const ['class_teacher', 'teacher_name']),
-      dob: _firstString(json, const ['dob', 'date_of_birth']),
+
       gender: _firstString(json, const ['gender']),
       bloodGroup: _firstString(json, const ['blood_group']),
-      contact: _firstString(json, const ['contact', 'phone', 'mobile']),
-      balanceDue: _firstDouble(json, const ['balance_due', 'due_amount']),
+
+      balanceDue: _firstDouble(json, const ['balance_due', 'due_amount', 'balance_amount']),
       paidAmount: _firstDouble(json, const ['paid_amount', 'paid']),
       totalAmount: _firstDouble(json, const ['total_amount', 'total_fee']),
       attendancePercent: _firstDouble(
@@ -147,6 +166,18 @@ class StudentDetailData {
     return '';
   }
 
+   static int _firstInt(Map<String, dynamic> json, List<String> keys) {
+    for (final String key in keys) {
+      if (!json.containsKey(key)) continue;
+      final int value = _asInt(json[key]);
+      if (value != 0) return value;
+      if (_isZeroLike(json[key])) return 0;
+    }
+    return 0;
+  }
+
+
+
   static double _firstDouble(Map<String, dynamic> json, List<String> keys) {
     for (final String key in keys) {
       if (!json.containsKey(key)) continue;
@@ -160,6 +191,7 @@ class StudentDetailData {
   static bool _isZeroLike(dynamic value) {
     if (value == null) return false;
     if (value is num) return value == 0;
+    if (value is int) return value == 0;
     return value.toString().trim() == '0';
   }
 
@@ -185,6 +217,11 @@ class StudentDetailData {
     }
     return value.toString();
   }
+}
+
+int _asInt(dynamic value) {
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
 }
 
 double _asDouble(dynamic value) {

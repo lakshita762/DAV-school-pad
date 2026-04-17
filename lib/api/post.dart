@@ -24,16 +24,51 @@ class Post {
 
   Future<List<ConfigModel>> fetchConfig() async {
     try {
-      final response = await _dio.get('/api/config');
+      final response = await _dio.post('/api/org-codes');
 
       final List<dynamic> data = response.data as List<dynamic>;
+      print(data);
       return data.map((item) => ConfigModel.fromJson(item)).toList();
+
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
       throw Exception('Unexpected error: $e');
     }
   }
+
+   Future<Map<String, dynamic>> getHash({
+    required String hashName,
+    required String hashString,
+    String? postSalt,
+     required String token,
+  }) async {
+     try {
+       print('hashName $hashName hashString $hashString');
+       final response = await _dio.post(
+         '/api/generate-hash',
+         data: {
+           'hashName': hashName,
+           'hashString': hashString,
+           'postSalt': postSalt,
+         },
+         options: Options(
+           headers: {
+             'Authorization': 'Bearer $token',
+           },
+         ),
+       );
+       print('responses $response');
+
+       return Map<String, dynamic>.from(response.data);
+     } on DioException catch (e) {
+       throw _handleDioError(e);
+     } catch (e) {
+       throw Exception('Unexpected error: $e');
+     }
+
+  }
+
 
   Exception _handleDioError(DioException e) {
     switch (e.type) {

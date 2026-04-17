@@ -1,9 +1,14 @@
+import 'package:dav_school_app/screen/pay_detail_show.dart';
+import 'package:dav_school_app/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../api/client.dart';
 import '../api/get.dart';
 import '../api/models/student_detail_model.dart';
 import '../extras/dimension.dart';
+import '../extras/string.dart';
 
 const Color _bg = Color(0xFFF4F6FA);
 const Color _surface = Colors.white;
@@ -21,7 +26,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
   static const String _tokenStorageKey = 'auth_bearer_token';
   final GetApi _getApi = GetApi();
 
@@ -30,8 +35,24 @@ class _HomePageState extends State<HomePage> {
   StudentDetailData? _student;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      _loadStudentDetail();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadStudentDetail();
   }
 
@@ -143,6 +164,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: AppDimens.paddingS),
                 _buildQuickAccess(student),
+                const SizedBox(height: AppDimens.paddingS),
+
               ],
             ),
           ),
@@ -159,53 +182,92 @@ class _HomePageState extends State<HomePage> {
       if (student.schoolName.isNotEmpty) student.schoolName,
     ].join(' · ');
 
-    return Row(
+    return Column(
       children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFFEAF2FF),
-            border: Border.all(color: _border),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            initials,
-            style: const TextStyle(
-              color: Color(0xFF1B4F9E),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        const SizedBox(width: AppDimens.paddingM),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Good morning, ${student.studentName.isEmpty ? 'Student' : student.studentName}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFEAF2FF),
+                border: Border.all(color: _border),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                initials,
                 style: const TextStyle(
-                  color: _text,
-                  fontSize: 22,
+                  color: Color(0xFF1B4F9E),
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle.isEmpty ? 'Student dashboard' : subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: _muted,
-                  fontSize: AppDimens.fontS,
+            ),
+            InkWell(
+              child: Container(
+                width: 100,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: const Color(0xFFEAF2FF),
+                  border: Border.all(color: _border),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'LogOut',
+                  style: const TextStyle(
+                    color: Color(0xFF1B4F9E),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ],
-          ),
+              onTap: () async {
+                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString(Strings.tokenStorageKey, '');
+
+                var route = MaterialPageRoute(
+                    builder: ((BuildContext context) => SplashScreen()));
+
+                Navigator.of(context)
+                    .pushAndRemoveUntil(route, (Route<dynamic> route) => false);
+              },
+            )
+
+          ],
         ),
+        Row(
+          children: [
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    student.studentName.isEmpty ? 'Student' : student.studentName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: _text,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle.isEmpty ? 'Student dashboard' : subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: _muted,
+                      fontSize: AppDimens.fontS,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -349,7 +411,7 @@ class _HomePageState extends State<HomePage> {
       paidAmount: 0,
       totalAmount: 0,
       attendancePercent: 0,
-      dueDate: '',
+      dueDate: '', adm_no:'', active: '', email: '', conveyance: '', hostel: ''
     );
   }
 }
@@ -463,9 +525,45 @@ class PaymentsPage extends StatelessWidget {
             amount: _formatCurrency(student.totalAmount),
             pending: student.balanceDue > 0,
           ),
+          InkWell(
+            child: Container(
+              width: 100,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: const Color(0xFFEAF2FF),
+                border: Border.all(color: _border),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'Pay',
+                style: const TextStyle(
+                  color: Color(0xFF1B4F9E),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            onTap: () async {
+              openUrl('${DioClient.baseUrl}/student-autologin?dob=${student.dob}&adm_no=${student.adm_no}');
+            },
+          ),
+
         ],
       ),
     );
+  }
+
+  Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   String _formatCurrency(double amount) {

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/client.dart';
 import '../api/models/config_model.dart';
 import '../api/models/login_model.dart';
 import '../api/post.dart';
 import '../extras/dimension.dart';
+import '../extras/string.dart';
 import 'home.dart';
 
 const Color _bg = Color(0xFFF4F6FA);
@@ -31,6 +33,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _admissionController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -39,10 +42,15 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   String? _errorMessage;
 
+  String _statusMessage = Strings.statusInitializing;
+  bool _hasError = false;
+  List<ConfigModel> _urlItems = [];
+  String _mainUrl = "";
   @override
   void initState() {
     super.initState();
     _setupAnimations();
+    _loadConfig();
   }
 
   void _setupAnimations() {
@@ -65,6 +73,35 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     _animationController.forward();
   }
 
+  Future<void> _loadConfig() async {
+    final Future<void> minDelay =
+    Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
+
+    try {
+      setState(() => _statusMessage = Strings.statusFetching);
+
+      final results = await Future.wait([_post.fetchConfig(), minDelay]);
+      _urlItems = results[0] as List<ConfigModel>;
+      print(_urlItems.length);
+
+      if (!mounted) return;
+
+      setState(() => _statusMessage = Strings.statusLoaded(_urlItems.length));
+      await Future.delayed(Duration(milliseconds: AppDimens.durationStatusDelay));
+
+      if (!mounted) return;
+
+
+
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+        _statusMessage = e.toString().replaceAll('Exception: ', '');
+      });
+    }
+  }
+
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
 
@@ -77,11 +114,36 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       _errorMessage = null;
     });
 
+    for(int i = 0; i< _urlItems.length; i++){
+      if(_codeController.text == _urlItems[i].code){
+        _mainUrl = _urlItems[i].url;
+        break;
+      }
+    }
+
+    if(_mainUrl.isNotEmpty){
+      _login();
+    }else{
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'No valid Code found';
+      });
+    }
+
+
+  }
+
+  _login() async {
     try {
+      final dioClient = DioClient();
+
+      dioClient.changeBaseUrl(_mainUrl);
+
       final LoginResponse response = await _post.login(
         LoginRequest(
           admNo: _admissionController.text.trim(),
           dob: _dobController.text.trim(),
+
         ),
         _tempLoginUrl,
       );
@@ -98,8 +160,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       final String message = response.message.isNotEmpty
           ? response.message
           : response.success
-              ? 'Login successful.'
-              : 'Login failed.';
+          ? 'Login successful.'
+          : 'Login failed.';
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -109,6 +171,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       );
 
       if (response.success) {
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
             builder: (BuildContext context) => const HomePage(),
@@ -253,6 +316,22 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               return null;
             },
           ),
+          const SizedBox(height: AppDimens.paddingL),
+          _buildInputField(
+            controller: _codeController,
+            label: 'School Code',
+            hintText: 'Enter school code',
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            prefixIcon: Icons.badge_outlined,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'School Code is required.';
+              }
+              return null;
+            },
+          ),
+
           if (_errorMessage != null) ...[
             const SizedBox(height: AppDimens.paddingL),
             _buildErrorMessage(),
