@@ -1,13 +1,19 @@
-import 'package:dav_school_app/api/post.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/models/config_model.dart';
-import '../extras/color.dart';
 import '../extras/dimension.dart';
 import '../extras/string.dart';
 import 'home.dart';
 import 'login.dart';
+
+const Color _bgTop = Color(0xFFEAF2FF);
+const Color _bgBottom = Color(0xFFF8FBFF);
+const Color _blobOne = Color(0xFFCBDDFF);
+const Color _blobTwo = Color(0xFFDDEAFF);
+const Color _primary = Color(0xFF2A7FFF);
+const Color _titleColor = Color(0xFF172338);
+const Color _subtleText = Color(0xFF61708A);
+const Color _error = Color(0xFFE2572C);
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,11 +24,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  final Post _post = Post();
-
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _animationController;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<double> _scaleAnimation;
 
   String _statusMessage = Strings.statusInitializing;
   bool _hasError = false;
@@ -40,11 +44,9 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(milliseconds: AppDimens.durationAnimation),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-      ),
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
@@ -58,26 +60,35 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _loadConfig() async {
-    final Future<void> minDelay =
-    Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String token = prefs.getString(Strings.tokenStorageKey) ?? '';
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString(Strings.tokenStorageKey) ?? '';
-    if (token.isEmpty) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          transitionDuration: Duration(milliseconds: AppDimens.durationTransition),
-          pageBuilder: (_, __, ___) => Login(items: []),
-          transitionsBuilder: (_, animation, __, child) =>
-              FadeTransition(opacity: animation, child: child),
-        ),
-      );
-    }else{
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (BuildContext context) => const HomePage(),
-        ),
-      );
+      if (!mounted) return;
+
+      if (token.isEmpty) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder<void>(
+            transitionDuration:
+                Duration(milliseconds: AppDimens.durationTransition),
+            pageBuilder: (_, __, ___) => const Login(items: []),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => const HomePage(),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+        _statusMessage = e.toString().replaceAll('Exception: ', '');
+      });
     }
   }
 
@@ -90,26 +101,70 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) => FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(scale: _scaleAnimation, child: child),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[_bgTop, _bgBottom],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildLogo(),
-              SizedBox(height: AppDimens.paddingXXL),
-              _buildTitle(),
-              SizedBox(height: AppDimens.paddingXS),
-              _buildTagline(),
-              SizedBox(height: AppDimens.splashBottomSpacing),
-              _hasError ? _buildErrorState() : _buildLoadingState(),
-            ],
-          ),
+        ),
+        child: Stack(
+          children: <Widget>[
+            const Positioned(
+              top: -70,
+              right: -50,
+              child: _SplashBlob(size: 220, color: _blobOne),
+            ),
+            const Positioned(
+              left: -90,
+              bottom: -100,
+              child: _SplashBlob(size: 260, color: _blobTwo),
+            ),
+            Center(
+              child: AnimatedBuilder(
+                animation: _animationController,
+                builder: (BuildContext context, Widget? child) {
+                  return FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ScaleTransition(scale: _scaleAnimation, child: child),
+                  );
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: AppDimens.paddingL),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimens.paddingXL,
+                    vertical: AppDimens.paddingXXL,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.86),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFFE0E8F5)),
+                    boxShadow: const <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0x22000000),
+                        blurRadius: 24,
+                        offset: Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      _buildLogo(),
+                      const SizedBox(height: AppDimens.paddingXXL),
+                      _buildTitle(),
+                      const SizedBox(height: AppDimens.paddingXS),
+                      _buildTagline(),
+                      const SizedBox(height: AppDimens.splashBottomSpacing),
+                      _hasError ? _buildErrorState() : _buildLoadingState(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -117,69 +172,73 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildLogo() {
     return Container(
-      width: AppDimens.logoSize,
-      height: AppDimens.logoSize,
+      width: AppDimens.logoSize + 10,
+      height: AppDimens.logoSize + 10,
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppDimens.logoRadius),
-        boxShadow: [
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[Color(0xFF2E84FF), Color(0xFF125DD8)],
+        ),
+        borderRadius: BorderRadius.circular(AppDimens.logoRadius + 8),
+        boxShadow: <BoxShadow>[
           BoxShadow(
-            color: AppColors.primaryGlow,
+            color: _primary.withOpacity(0.35),
             blurRadius: AppDimens.logoBlurRadius,
-            spreadRadius: AppDimens.logoSpreadRadius,
+            spreadRadius: 2,
           ),
         ],
       ),
-      child: Icon(
+      child: const Icon(
         Icons.school,
         size: AppDimens.logoIconSize,
-        color: AppColors.iconColor,
+        color: Colors.white,
       ),
     );
   }
 
   Widget _buildTitle() {
-    return Text(
-      Strings.appName,
+    return const Text(
+      'DAV School Pad',
       style: TextStyle(
-        color: AppColors.textPrimary,
+        color: _titleColor,
         fontSize: AppDimens.fontTitle,
-        fontWeight: FontWeight.bold,
-        letterSpacing: AppDimens.letterSpacingTitle,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.0,
       ),
     );
   }
 
   Widget _buildTagline() {
-    return Text(
-      Strings.appTagline,
+    return const Text(
+      'Loading your experience',
       style: TextStyle(
-        color: AppColors.textHint,
+        color: _subtleText,
         fontSize: AppDimens.fontM,
-        letterSpacing: AppDimens.letterSpacingHint,
+        letterSpacing: 0.4,
       ),
     );
   }
 
   Widget _buildLoadingState() {
     return Column(
-      children: [
-        SizedBox(
+      children: <Widget>[
+        const SizedBox(
           width: AppDimens.loaderSize,
           height: AppDimens.loaderSize,
           child: CircularProgressIndicator(
             strokeWidth: AppDimens.strokeWidth,
-            color: AppColors.primary,
+            color: _primary,
           ),
         ),
-        SizedBox(height: AppDimens.splashStatusSpacing),
+        const SizedBox(height: AppDimens.splashStatusSpacing),
         AnimatedSwitcher(
           duration: Duration(milliseconds: AppDimens.durationSwitch),
           child: Text(
             _statusMessage,
-            key: ValueKey(_statusMessage),
-            style: TextStyle(
-              color: AppColors.textSecondary,
+            key: ValueKey<String>(_statusMessage),
+            style: const TextStyle(
+              color: _subtleText,
               fontSize: AppDimens.fontS,
             ),
           ),
@@ -190,25 +249,27 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildErrorState() {
     return Column(
-      children: [
-        Icon(
+      children: <Widget>[
+        const Icon(
           Icons.error_outline,
-          color: AppColors.error,
+          color: _error,
           size: AppDimens.errorIconSize,
         ),
-        SizedBox(height: AppDimens.errorSpacing),
+        const SizedBox(height: AppDimens.errorSpacing),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppDimens.paddingXXL + 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.paddingXXL + 12,
+          ),
           child: Text(
             _statusMessage,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.error,
+            style: const TextStyle(
+              color: _error,
               fontSize: AppDimens.fontS,
             ),
           ),
         ),
-        SizedBox(height: AppDimens.paddingXL),
+        const SizedBox(height: AppDimens.paddingXL),
         TextButton.icon(
           onPressed: () {
             setState(() {
@@ -217,13 +278,32 @@ class _SplashScreenState extends State<SplashScreen>
             });
             _loadConfig();
           },
-          icon: Icon(Icons.refresh, color: AppColors.primary),
-          label: Text(
+          icon: const Icon(Icons.refresh, color: _primary),
+          label: const Text(
             Strings.btnRetry,
-            style: TextStyle(color: AppColors.primary),
+            style: TextStyle(color: _primary),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SplashBlob extends StatelessWidget {
+  const _SplashBlob({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

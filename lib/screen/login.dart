@@ -6,15 +6,15 @@ import '../api/models/config_model.dart';
 import '../api/models/login_model.dart';
 import '../api/post.dart';
 import '../extras/dimension.dart';
-import '../extras/string.dart';
-import 'home.dart';
+import 'package:dav_school_app/screen/home.dart';
 
-const Color _bg = Color(0xFFF4F6FA);
+const Color _bg = Color(0xFFEFF3FF);
 const Color _surface = Colors.white;
 const Color _border = Color(0xFFE3E7EE);
 const Color _text = Color(0xFF1C2430);
 const Color _muted = Color(0xFF6D7786);
 const Color _primary = Color(0xFF2A7FFF);
+const Color _primaryDark = Color(0xFF0D4FC2);
 const Color _danger = Color(0xFFE2572C);
 
 class Login extends StatefulWidget {
@@ -42,8 +42,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   String? _errorMessage;
 
-  String _statusMessage = Strings.statusInitializing;
-  bool _hasError = false;
   List<ConfigModel> _urlItems = [];
   String _mainUrl = "";
   @override
@@ -75,29 +73,17 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   Future<void> _loadConfig() async {
     final Future<void> minDelay =
-    Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
+        Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
 
     try {
-      setState(() => _statusMessage = Strings.statusFetching);
-
       final results = await Future.wait([_post.fetchConfig(), minDelay]);
       _urlItems = results[0] as List<ConfigModel>;
-      print(_urlItems.length);
 
       if (!mounted) return;
-
-      setState(() => _statusMessage = Strings.statusLoaded(_urlItems.length));
-      await Future.delayed(Duration(milliseconds: AppDimens.durationStatusDelay));
-
-      if (!mounted) return;
-
-
-
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _hasError = true;
-        _statusMessage = e.toString().replaceAll('Exception: ', '');
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
       });
     }
   }
@@ -133,7 +119,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   }
 
-  _login() async {
+  Future<void> _login() async {
     try {
       final dioClient = DioClient();
 
@@ -192,6 +178,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     _animationController.dispose();
     _admissionController.dispose();
     _dobController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
@@ -204,27 +191,47 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           opacity: _fadeAnimation,
           child: SlideTransition(
             position: _slideAnimation,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingL,
-                  vertical: AppDimens.paddingXXL,
+            child: Stack(
+              children: [
+                const Positioned(
+                  top: -90,
+                  right: -70,
+                  child: _BackdropBlob(
+                    size: 240,
+                    color: Color(0xFFBCD6FF),
+                  ),
                 ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildHeader(),
-                        const SizedBox(height: AppDimens.paddingXXL),
-                        _buildLoginCard(),
-                      ],
+                const Positioned(
+                  left: -100,
+                  bottom: -120,
+                  child: _BackdropBlob(
+                    size: 280,
+                    color: Color(0xFFD7E7FF),
+                  ),
+                ),
+                Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimens.paddingL,
+                      vertical: AppDimens.paddingXXL,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildHeader(),
+                            const SizedBox(height: AppDimens.paddingXXL),
+                            _buildLoginCard(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
@@ -236,14 +243,41 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     return Column(
       children: [
         Container(
-          width: 72,
-          height: 72,
+          width: 86,
+          height: 86,
           decoration: BoxDecoration(
-            color: const Color(0xFFEAF2FF),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Color(0xFF3B8CFF), Color(0xFF1D67E0)],
+            ),
             shape: BoxShape.circle,
-            border: Border.all(color: _border),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x332A7FFF),
+                blurRadius: 20,
+                offset: Offset(0, 8),
+              ),
+            ],
           ),
-          child: const Icon(Icons.school_rounded, size: 36, color: _primary),
+          child: const Icon(Icons.school_rounded, size: 42, color: Colors.white),
+        ),
+        const SizedBox(height: AppDimens.paddingM),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE4EEFF),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: const Text(
+            'STUDENT PORTAL',
+            style: TextStyle(
+              color: _primaryDark,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
         ),
         const SizedBox(height: AppDimens.paddingL),
         const Text(
@@ -271,16 +305,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   Widget _buildLoginCard() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingL),
+      padding: const EdgeInsets.all(AppDimens.paddingXL),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: _border),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 18,
-            offset: Offset(0, 8),
+            color: Color(0x24000000),
+            blurRadius: 30,
+            offset: Offset(0, 10),
           ),
         ],
       ),
@@ -437,30 +471,74 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   Widget _buildLoginButton() {
     return SizedBox(
       height: 54,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _submit,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF97BAF5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[Color(0xFF2E84FF), Color(0xFF125DD8)],
           ),
-          textStyle: const TextStyle(
-            fontSize: AppDimens.fontXL,
-            fontWeight: FontWeight.w700,
-          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x332A7FFF),
+              blurRadius: 18,
+              offset: Offset(0, 8),
+            ),
+          ],
         ),
-        child: _isLoading
-            ? const SizedBox(
-                width: AppDimens.loaderSize,
-                height: AppDimens.loaderSize,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.2,
-                  color: Colors.white,
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : _submit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            textStyle: const TextStyle(
+              fontSize: AppDimens.fontXL,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  width: AppDimens.loaderSize,
+                  height: AppDimens.loaderSize,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Log In'),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_rounded, size: 20),
+                  ],
                 ),
-              )
-            : const Text('Log In'),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackdropBlob extends StatelessWidget {
+  const _BackdropBlob({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
       ),
     );
   }

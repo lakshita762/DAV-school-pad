@@ -1,4 +1,3 @@
-import 'package:dav_school_app/screen/pay_detail_show.dart';
 import 'package:dav_school_app/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,12 +9,13 @@ import '../api/models/student_detail_model.dart';
 import '../extras/dimension.dart';
 import '../extras/string.dart';
 
-const Color _bg = Color(0xFFF4F6FA);
+const Color _bg = Color(0xFFF6F8FD);
 const Color _surface = Colors.white;
-const Color _border = Color(0xFFE3E7EE);
+const Color _borderSoft = Color(0xFFE8EDF6);
 const Color _text = Color(0xFF1C2430);
 const Color _muted = Color(0xFF6D7786);
-const Color _primary = Color(0xFF2A7FFF);
+const Color _primary = Color(0xFF3E7BFA);
+const Color _primaryDark = Color(0xFF245FDC);
 const Color _danger = Color(0xFFE2572C);
 const Color _success = Color(0xFF2E9D55);
 
@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   static const String _tokenStorageKey = 'auth_bearer_token';
   final GetApi _getApi = GetApi();
 
@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-
     if (state == AppLifecycleState.resumed) {
       _loadStudentDetail();
     }
@@ -117,10 +116,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
                 const SizedBox(height: AppDimens.paddingL),
                 ElevatedButton(
                   onPressed: _loadStudentDetail,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    foregroundColor: Colors.white,
-                  ),
                   child: const Text('Retry'),
                 ),
               ],
@@ -138,7 +133,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
         child: RefreshIndicator(
           color: _primary,
           onRefresh: _loadStudentDetail,
-          child: SingleChildScrollView(
+          child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(
               AppDimens.paddingL,
@@ -146,28 +141,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
               AppDimens.paddingL,
               AppDimens.paddingXXL,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(student),
-                const SizedBox(height: AppDimens.paddingL),
-                _buildBalanceCard(student),
-                const SizedBox(height: AppDimens.paddingL),
-                const Text(
-                  'Quick Access',
-                  style: TextStyle(
-                    color: _muted,
-                    fontSize: AppDimens.fontS,
-                    letterSpacing: 0.5,
-                    fontWeight: FontWeight.w700,
-                  ),
+            children: [
+              _buildHeader(student),
+              const SizedBox(height: AppDimens.paddingL),
+              const Text(
+                'Quick Access',
+                style: TextStyle(
+                  color: _muted,
+                  fontSize: AppDimens.fontS,
+                  letterSpacing: 0.4,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(height: AppDimens.paddingS),
-                _buildQuickAccess(student),
-                const SizedBox(height: AppDimens.paddingS),
-
-              ],
-            ),
+              ),
+              const SizedBox(height: AppDimens.paddingS),
+              _buildQuickAccess(student),
+            ],
           ),
         ),
       ),
@@ -178,156 +166,89 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
     final String initials = _getInitials(student.studentName);
     final String subtitle = [
       if (student.className.isNotEmpty) student.className,
-      if (student.section.isNotEmpty) student.section,
-      if (student.schoolName.isNotEmpty) student.schoolName,
-    ].join(' · ');
+      if (student.section.isNotEmpty) 'Section ${student.section}',
+    ].join('  ');
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFEAF2FF),
-                border: Border.all(color: _border),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  color: Color(0xFF1B4F9E),
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            InkWell(
-              child: Container(
-                width: 100,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: const Color(0xFFEAF2FF),
-                  border: Border.all(color: _border),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'LogOut',
-                  style: const TextStyle(
-                    color: Color(0xFF1B4F9E),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              onTap: () async {
-                final SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setString(Strings.tokenStorageKey, '');
-
-                var route = MaterialPageRoute(
-                    builder: ((BuildContext context) => SplashScreen()));
-
-                Navigator.of(context)
-                    .pushAndRemoveUntil(route, (Route<dynamic> route) => false);
-              },
-            )
-
-          ],
-        ),
-        Row(
-          children: [
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    student.studentName.isEmpty ? 'Student' : student.studentName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: _text,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle.isEmpty ? 'Student dashboard' : subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: _muted,
-                      fontSize: AppDimens.fontS,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _buildBalanceCard(StudentDetailData student) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(AppDimens.paddingL),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: _borderSoft),
         boxShadow: const [
           BoxShadow(
             color: Color(0x12000000),
-            blurRadius: 16,
-            offset: Offset(0, 6),
+            blurRadius: 22,
+            offset: Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Balance Due',
-            style: TextStyle(color: _muted, fontSize: AppDimens.fontS),
+          Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFEAF1FF),
+                  border: Border.all(color: const Color(0xFFD8E4FB)),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: _primaryDark,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              IconButton.filledTonal(
+                onPressed: () async {
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  await prefs.setString(Strings.tokenStorageKey, '');
+
+                  if (!mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute<void>(builder: (_) => const SplashScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: const Color(0xFFEAF1FF),
+                  foregroundColor: _primaryDark,
+                ),
+                icon: const Icon(Icons.logout_rounded, size: 20),
+                tooltip: 'Logout',
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimens.paddingM),
+          Text(
+            'Hello, ${student.studentName.isEmpty ? 'Student' : student.studentName}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: _text,
+              fontSize: 27,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
-            _formatCurrency(student.balanceDue),
+            subtitle.isEmpty ? 'Welcome back' : subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: _danger,
-              fontSize: 34,
-              fontWeight: FontWeight.w800,
-              height: 1.1,
+              color: _muted,
+              fontSize: AppDimens.fontS,
+              fontWeight: FontWeight.w500,
             ),
-          ),
-          const SizedBox(height: AppDimens.paddingS),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: student.paidProgress,
-              minHeight: 6,
-              color: _danger,
-              backgroundColor: const Color(0xFFE8EAF0),
-            ),
-          ),
-          const SizedBox(height: AppDimens.paddingS),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Paid ${_formatCurrency(student.paidAmount)}',
-                style: const TextStyle(color: _muted, fontSize: AppDimens.fontS),
-              ),
-              Text(
-                'Total ${_formatCurrency(student.totalAmount)}',
-                style: const TextStyle(color: _muted, fontSize: AppDimens.fontS),
-              ),
-            ],
           ),
         ],
       ),
@@ -383,11 +304,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  String _formatCurrency(double amount) {
-    if (amount % 1 == 0) return 'INR ${amount.toInt()}';
-    return 'INR ${amount.toStringAsFixed(2)}';
-  }
-
   StudentDetailData _fallbackStudent() {
     return StudentDetailData(
       studentName: '',
@@ -411,7 +327,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver{
       paidAmount: 0,
       totalAmount: 0,
       attendancePercent: 0,
-      dueDate: '', adm_no:'', active: '', email: '', conveyance: '', hostel: ''
+      dueDate: '',
+      adm_no: '',
+      active: '',
+      email: '',
+      conveyance: '',
+      hostel: '',
     );
   }
 }
@@ -433,23 +354,30 @@ class _ActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(18),
       child: Ink(
         padding: const EdgeInsets.all(AppDimens.paddingL),
         decoration: BoxDecoration(
           color: _surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _border),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: _borderSoft),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0F000000),
+              blurRadius: 14,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 34,
-              height: 34,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF2FF),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFEAF1FF),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: _primary, size: 20),
             ),
@@ -458,7 +386,7 @@ class _ActionCard extends StatelessWidget {
               title,
               style: const TextStyle(
                 color: _text,
-                fontSize: AppDimens.fontL,
+                fontSize: AppDimens.fontXL,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -468,6 +396,7 @@ class _ActionCard extends StatelessWidget {
               style: const TextStyle(
                 color: _muted,
                 fontSize: AppDimens.fontS,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -487,9 +416,6 @@ class PaymentsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: _bg,
-        foregroundColor: _text,
         title: const Text('Payments'),
       ),
       body: ListView(
@@ -525,29 +451,28 @@ class PaymentsPage extends StatelessWidget {
             amount: _formatCurrency(student.totalAmount),
             pending: student.balanceDue > 0,
           ),
-          InkWell(
-            child: Container(
-              width: 100,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: const Color(0xFFEAF2FF),
-                border: Border.all(color: _border),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                'Pay',
-                style: const TextStyle(
-                  color: Color(0xFF1B4F9E),
-                  fontWeight: FontWeight.w700,
+          const SizedBox(height: AppDimens.paddingM),
+          SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {
+                openUrl(
+                  '${DioClient.baseUrl}/student-autologin?dob=${student.dob}&adm_no=${student.adm_no}',
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
+              child: const Text(
+                'Pay Now',
+                style: TextStyle(fontSize: AppDimens.fontL, fontWeight: FontWeight.w700),
+              ),
             ),
-            onTap: () async {
-              openUrl('${DioClient.baseUrl}/student-autologin?dob=${student.dob}&adm_no=${student.adm_no}');
-            },
           ),
-
         ],
       ),
     );
@@ -566,7 +491,7 @@ class PaymentsPage extends StatelessWidget {
     }
   }
 
-  String _formatCurrency(double amount) {
+  static String _formatCurrency(double amount) {
     if (amount % 1 == 0) return 'INR ${amount.toInt()}';
     return 'INR ${amount.toStringAsFixed(2)}';
   }
@@ -582,33 +507,51 @@ class _PaymentSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppDimens.paddingL),
       decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[Color(0xFF4A86FF), Color(0xFF2C69E6)],
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1E2A63D8),
+            blurRadius: 22,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Total balance due', style: TextStyle(color: _muted)),
-          const SizedBox(height: 4),
+          const Text(
+            'Total balance due',
+            style: TextStyle(
+              color: Color(0xFFE3ECFF),
+              fontSize: AppDimens.fontS,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             student.balanceDue % 1 == 0
                 ? 'INR ${student.balanceDue.toInt()}'
                 : 'INR ${student.balanceDue.toStringAsFixed(2)}',
             style: const TextStyle(
-              color: _danger,
+              color: Colors.white,
               fontWeight: FontWeight.w800,
-              fontSize: 28,
+              fontSize: 34,
+              height: 1,
             ),
           ),
-          const SizedBox(height: AppDimens.paddingS),
+          const SizedBox(height: AppDimens.paddingM),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(5),
             child: LinearProgressIndicator(
               value: student.paidProgress,
-              minHeight: 6,
-              color: _danger,
-              backgroundColor: const Color(0xFFE8EAF0),
+              minHeight: 7,
+              color: const Color(0xFFAEE8C8),
+              backgroundColor: Colors.white.withOpacity(0.32),
             ),
           ),
         ],
@@ -637,19 +580,24 @@ class _PaymentItem extends StatelessWidget {
       padding: const EdgeInsets.all(AppDimens.paddingM),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderSoft),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: pending
-                  ? const Color(0xFFFFEFEA)
-                  : const Color(0xFFEAF8EE),
-              borderRadius: BorderRadius.circular(10),
+              color: pending ? const Color(0xFFFFF1EC) : const Color(0xFFECFAF1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               pending ? Icons.pending_actions_outlined : Icons.check_circle,
@@ -664,12 +612,20 @@ class _PaymentItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(color: _text, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    color: _text,
+                    fontWeight: FontWeight.w700,
+                    fontSize: AppDimens.fontXL,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(color: _muted, fontSize: AppDimens.fontS),
+                  style: const TextStyle(
+                    color: _muted,
+                    fontSize: AppDimens.fontS,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -697,9 +653,6 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: _bg,
-        foregroundColor: _text,
         title: const Text('My Profile'),
       ),
       body: ListView(
@@ -751,24 +704,43 @@ class _ProfileHeader extends StatelessWidget {
         .join()
         .toUpperCase();
 
+    final String subtitle = [
+      if (student.className.trim().isNotEmpty) student.className,
+      if (student.section.trim().isNotEmpty) 'Section ${student.section}',
+    ].join('  ');
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimens.paddingL),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: _borderSoft),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 22,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: const Color(0xFFEAF2FF),
+          Container(
+            width: 68,
+            height: 68,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFEAF1FF),
+              border: Border.all(color: const Color(0xFFD8E4FB)),
+            ),
+            alignment: Alignment.center,
             child: Text(
               initials.isEmpty ? 'ST' : initials,
               style: const TextStyle(
-                color: Color(0xFF1B4F9E),
+                color: _primaryDark,
                 fontWeight: FontWeight.w700,
+                fontSize: 21,
               ),
             ),
           ),
@@ -778,10 +750,21 @@ class _ProfileHeader extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: _text,
-              fontSize: 18,
+              fontSize: 23,
               fontWeight: FontWeight.w700,
             ),
           ),
+          if (subtitle.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                color: _muted,
+                fontSize: AppDimens.fontS,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -799,8 +782,15 @@ class _DetailCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _borderSoft),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -831,7 +821,11 @@ class _DetailCard extends StatelessWidget {
               children: [
                 _DetailRow(label: row.label, value: row.value),
                 if (hasDivider)
-                  const Divider(height: 1, thickness: 1, color: _border),
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xFFF0F3F8),
+                  ),
               ],
             );
           }),
@@ -843,6 +837,7 @@ class _DetailCard extends StatelessWidget {
 
 class _DetailRowData {
   _DetailRowData(this.label, this.value);
+
   final String label;
   final String value;
 }
@@ -868,6 +863,7 @@ class _DetailRow extends StatelessWidget {
               style: const TextStyle(
                 color: _muted,
                 fontSize: AppDimens.fontS,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -878,7 +874,8 @@ class _DetailRow extends StatelessWidget {
               textAlign: TextAlign.right,
               style: const TextStyle(
                 color: _text,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
+                fontSize: AppDimens.fontM,
               ),
             ),
           ),
