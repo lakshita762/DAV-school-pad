@@ -6,11 +6,11 @@ import '../extras/string.dart';
 import 'home.dart';
 import 'login.dart';
 
-const Color _bgTop = Color(0xFFEAF2FF);
-const Color _bgBottom = Color(0xFFF8FBFF);
-const Color _blobOne = Color(0xFFCBDDFF);
-const Color _blobTwo = Color(0xFFDDEAFF);
-const Color _primary = Color(0xFF2A7FFF);
+const Color _bgTop = Color(0xFFFFF3E8);
+const Color _bgBottom = Color(0xFFF4F4F4);
+const Color _blobOne = Color(0xFFFFF3E8);
+const Color _blobTwo = Color(0xFFF4F4F4);
+const Color _primary = Color(0xFF75292A);
 const Color _titleColor = Color(0xFF172338);
 const Color _subtleText = Color(0xFF61708A);
 const Color _error = Color(0xFFE2572C);
@@ -140,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen>
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.86),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE0E8F5)),
+                    border: Border.all(color: const Color(0xFFFFF3E8)),
                     boxShadow: const <BoxShadow>[
                       BoxShadow(
                         color: Color(0x22000000),
@@ -178,7 +178,7 @@ class _SplashScreenState extends State<SplashScreen>
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[Color(0xFF2E84FF), Color(0xFF125DD8)],
+          colors: <Color>[Color(0xFF75292A), Color(0xFF75292A)],
         ),
         borderRadius: BorderRadius.circular(AppDimens.logoRadius + 8),
         boxShadow: <BoxShadow>[

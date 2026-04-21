@@ -8,16 +8,16 @@ import '../api/get.dart';
 import '../api/models/student_detail_model.dart';
 import '../extras/dimension.dart';
 import '../extras/string.dart';
+import 'profile_page.dart';
 
-const Color _bg = Color(0xFFF6F8FD);
+const Color _bg = Color(0xFFF4F4F4);
 const Color _surface = Colors.white;
-const Color _borderSoft = Color(0xFFE8EDF6);
+const Color _borderSoft = Color(0xFFFFF3E8);
 const Color _text = Color(0xFF1C2430);
 const Color _muted = Color(0xFF6D7786);
-const Color _primary = Color(0xFF3E7BFA);
-const Color _primaryDark = Color(0xFF245FDC);
+const Color _primary = Color(0xFF75292A);
 const Color _danger = Color(0xFFE2572C);
-const Color _success = Color(0xFF2E9D55);
+const Color _success = Color(0xFF75292A);
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -135,26 +135,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           onRefresh: _loadStudentDetail,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              AppDimens.paddingL,
-              AppDimens.paddingL,
-              AppDimens.paddingL,
-              AppDimens.paddingXXL,
-            ),
+            padding: EdgeInsets.zero,
             children: [
               _buildHeader(student),
-              const SizedBox(height: AppDimens.paddingL),
-              const Text(
-                'Quick Access',
-                style: TextStyle(
-                  color: _muted,
-                  fontSize: AppDimens.fontS,
-                  letterSpacing: 0.4,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: AppDimens.paddingS),
-              _buildQuickAccess(student),
+              _buildHomeBody(student),
             ],
           ),
         ),
@@ -164,24 +148,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildHeader(StudentDetailData student) {
     final String initials = _getInitials(student.studentName);
+    final String displayName = _toTitleCase(
+      student.studentName.isEmpty ? 'Student' : student.studentName,
+    );
     final String subtitle = [
       if (student.className.isNotEmpty) student.className,
       if (student.section.isNotEmpty) 'Section ${student.section}',
     ].join('  ');
 
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingL),
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _borderSoft),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 22,
-            offset: Offset(0, 8),
-          ),
-        ],
+      color: _primary,
+      padding: const EdgeInsets.fromLTRB(
+        AppDimens.paddingL,
+        AppDimens.paddingL,
+        AppDimens.paddingL,
+        AppDimens.paddingXXL,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,14 +174,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 height: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFEAF1FF),
-                  border: Border.all(color: const Color(0xFFD8E4FB)),
+                  color: Colors.white,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   initials,
                   style: const TextStyle(
-                    color: _primaryDark,
+                    color: _primary,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -219,8 +199,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   );
                 },
                 style: IconButton.styleFrom(
-                  backgroundColor: const Color(0xFFEAF1FF),
-                  foregroundColor: _primaryDark,
+                  backgroundColor: Colors.white,
+                  foregroundColor: _primary,
                 ),
                 icon: const Icon(Icons.logout_rounded, size: 20),
                 tooltip: 'Logout',
@@ -229,12 +209,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           const SizedBox(height: AppDimens.paddingM),
           Text(
-            'Hello, ${student.studentName.isEmpty ? 'Student' : student.studentName}',
+            'Hello, $displayName',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: _text,
-              fontSize: 27,
+              color: Colors.white,
+              fontSize: 28,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.3,
             ),
@@ -245,8 +225,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: _muted,
-              fontSize: AppDimens.fontS,
+              color: Color(0xFFE5F3E8),
+              fontSize: AppDimens.fontL,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -255,39 +235,64 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
+  Widget _buildHomeBody(StudentDetailData student) {
+    return Container(
+      transform: Matrix4.translationValues(0, -20, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppDimens.paddingL,
+        AppDimens.paddingM,
+        AppDimens.paddingL,
+        AppDimens.paddingXXL,
+      ),
+      decoration: const BoxDecoration(
+        color: _bg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(34)),
+      ),
+      child: _buildQuickAccess(student),
+    );
+  }
+
   Widget _buildQuickAccess(StudentDetailData student) {
-    return Row(
-      children: [
-        Expanded(
-          child: _ActionCard(
-            icon: Icons.person_outline_rounded,
-            title: 'Profile',
-            subtitle: 'Student details',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => ProfilePage(student: student),
-                ),
-              );
-            },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingM),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 150,
+            child: _ActionCard(
+              icon: Icons.manage_accounts_rounded,
+              title: 'Profile',
+              subtitle: 'Student Details',
+              iconBg: const Color(0xFFFFF3E8),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ProfilePage(student: student),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        const SizedBox(width: AppDimens.paddingS),
-        Expanded(
-          child: _ActionCard(
-            icon: Icons.credit_card_outlined,
-            title: 'Payments',
-            subtitle: 'Fee status',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => PaymentsPage(student: student),
-                ),
-              );
-            },
+          const SizedBox(width: AppDimens.paddingL),
+          SizedBox(
+            width: 150,
+            child: _ActionCard(
+              icon: Icons.account_balance_wallet_outlined,
+              title: 'Payment',
+              subtitle: 'Fee Status',
+              iconBg: const Color(0xFFFFF3E8),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => PaymentsPage(student: student),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -302,6 +307,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return parts.first.substring(0, parts.first.length >= 2 ? 2 : 1).toUpperCase();
     }
     return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  String _toTitleCase(String value) {
+    return value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((String part) => part.isNotEmpty)
+        .map(
+          (String part) =>
+              '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
+        .join(' ');
   }
 
   StudentDetailData _fallbackStudent() {
@@ -342,30 +359,37 @@ class _ActionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.iconBg,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color iconBg;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Ink(
-        padding: const EdgeInsets.all(AppDimens.paddingL),
+      child: Container(
+        height: 156,
+        padding: const EdgeInsets.all(AppDimens.paddingM),
         decoration: BoxDecoration(
-          color: _surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: _borderSoft),
+          border: Border.all(color: const Color(0xFFE2E2E2)),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x0F000000),
+              color: Color(0x26000000),
               blurRadius: 14,
-              offset: Offset(0, 4),
+              offset: Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -373,15 +397,15 @@ class _ActionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF1FF),
-                borderRadius: BorderRadius.circular(12),
+                color: iconBg,
+                shape: BoxShape.circle,
               ),
               child: Icon(icon, color: _primary, size: 20),
             ),
-            const SizedBox(height: AppDimens.paddingS),
+            const SizedBox(height: AppDimens.paddingM),
             Text(
               title,
               style: const TextStyle(
@@ -511,11 +535,11 @@ class _PaymentSummary extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[Color(0xFF4A86FF), Color(0xFF2C69E6)],
+          colors: <Color>[Color(0xFF75292A), Color(0xFF75292A)],
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1E2A63D8),
+            color: Color(0x3375292A),
             blurRadius: 22,
             offset: Offset(0, 8),
           ),
@@ -527,7 +551,7 @@ class _PaymentSummary extends StatelessWidget {
           const Text(
             'Total balance due',
             style: TextStyle(
-              color: Color(0xFFE3ECFF),
+              color: Color(0xFFFFF3E8),
               fontSize: AppDimens.fontS,
               fontWeight: FontWeight.w600,
             ),
@@ -550,7 +574,7 @@ class _PaymentSummary extends StatelessWidget {
             child: LinearProgressIndicator(
               value: student.paidProgress,
               minHeight: 7,
-              color: const Color(0xFFAEE8C8),
+              color: const Color(0xFFFFF3E8),
               backgroundColor: Colors.white.withOpacity(0.32),
             ),
           ),
@@ -596,7 +620,7 @@ class _PaymentItem extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: pending ? const Color(0xFFFFF1EC) : const Color(0xFFECFAF1),
+              color: pending ? const Color(0xFFFFF1EC) : const Color(0xFFFFF3E8),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -643,244 +667,3 @@ class _PaymentItem extends StatelessWidget {
   }
 }
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key, required this.student});
-
-  final StudentDetailData student;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bg,
-      appBar: AppBar(
-        title: const Text('My Profile'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppDimens.paddingL),
-        children: [
-          _ProfileHeader(student: student),
-          const SizedBox(height: AppDimens.paddingL),
-          _DetailCard(
-            title: 'Student Details',
-            rows: <_DetailRowData>[
-              _DetailRowData('Student name', _orDash(student.studentName)),
-              _DetailRowData('Admission date', _orDash(student.admissionDate)),
-              _DetailRowData("Father's name", _orDash(student.fatherName)),
-              _DetailRowData("Mother's name", _orDash(student.motherName)),
-              _DetailRowData('Date of birth', _orDash(student.dob)),
-              _DetailRowData('Gender', _orDash(student.gender)),
-            ],
-          ),
-          const SizedBox(height: AppDimens.paddingM),
-          _DetailCard(
-            title: 'Academic Details',
-            rows: <_DetailRowData>[
-              _DetailRowData('Course', _orDash(student.className)),
-              _DetailRowData('Section', _orDash(student.section)),
-              _DetailRowData('Category', _orDash(student.category)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  static String _orDash(String value) => value.trim().isEmpty ? '--' : value;
-}
-
-class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.student});
-
-  final StudentDetailData student;
-
-  @override
-  Widget build(BuildContext context) {
-    final String initials = student.studentName
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((String part) => part.isNotEmpty)
-        .map((String e) => e[0])
-        .take(2)
-        .join()
-        .toUpperCase();
-
-    final String subtitle = [
-      if (student.className.trim().isNotEmpty) student.className,
-      if (student.section.trim().isNotEmpty) 'Section ${student.section}',
-    ].join('  ');
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppDimens.paddingL),
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: _borderSoft),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 22,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFEAF1FF),
-              border: Border.all(color: const Color(0xFFD8E4FB)),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              initials.isEmpty ? 'ST' : initials,
-              style: const TextStyle(
-                color: _primaryDark,
-                fontWeight: FontWeight.w700,
-                fontSize: 21,
-              ),
-            ),
-          ),
-          const SizedBox(height: AppDimens.paddingS),
-          Text(
-            student.studentName.isEmpty ? 'Student' : student.studentName,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _text,
-              fontSize: 23,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          if (subtitle.isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: _muted,
-                fontSize: AppDimens.fontS,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailCard extends StatelessWidget {
-  const _DetailCard({required this.title, required this.rows});
-
-  final String title;
-  final List<_DetailRowData> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _borderSoft),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 10,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppDimens.paddingM,
-              AppDimens.paddingM,
-              AppDimens.paddingM,
-              AppDimens.paddingS,
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: _muted,
-                  fontSize: AppDimens.fontS,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4,
-                ),
-              ),
-            ),
-          ),
-          ...List<Widget>.generate(rows.length, (int index) {
-            final _DetailRowData row = rows[index];
-            final bool hasDivider = index != rows.length - 1;
-            return Column(
-              children: [
-                _DetailRow(label: row.label, value: row.value),
-                if (hasDivider)
-                  const Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Color(0xFFF0F3F8),
-                  ),
-              ],
-            );
-          }),
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailRowData {
-  _DetailRowData(this.label, this.value);
-
-  final String label;
-  final String value;
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.paddingM,
-        vertical: AppDimens.paddingM,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: _muted,
-                fontSize: AppDimens.fontS,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const SizedBox(width: AppDimens.paddingM),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                color: _text,
-                fontWeight: FontWeight.w600,
-                fontSize: AppDimens.fontM,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

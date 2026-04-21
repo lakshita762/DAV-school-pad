@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color seed = Color(0xFF0F6FFF);
+    const Color seed = Color(0xFF75292A);
 
     return MaterialApp(
       title: 'DAV School',
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           seedColor: seed,
           brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF5F7FC),
+        scaffoldBackgroundColor: const Color(0xFFF4F4F4),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           foregroundColor: Color(0xFF1C2430),
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFFE4E9F2)),
+            side: const BorderSide(color: Color(0xFFFFF3E8)),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -57,11 +57,11 @@ class MyApp extends StatelessWidget {
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFE4E9F2)),
+            borderSide: const BorderSide(color: Color(0xFFFFF3E8)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFE4E9F2)),
+            borderSide: const BorderSide(color: Color(0xFFFFF3E8)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

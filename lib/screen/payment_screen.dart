@@ -215,7 +215,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF4F4F4),
       body: Column(
         children: [
           Row(
@@ -225,13 +225,13 @@ class _PaymentScreenState extends State<PaymentScreen>
                 height: 50,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFEAF2FF),
+                  color: Color(0xFFFFF3E8),
                 ),
                 alignment: Alignment.center,
                 child: const Text(
                   'initials',
                   style: const TextStyle(
-                    color: Color(0xFF1B4F9E),
+                    color: Color(0xFF75292A),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
