@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/client.dart';
@@ -6,15 +9,15 @@ import '../api/models/config_model.dart';
 import '../api/models/login_model.dart';
 import '../api/post.dart';
 import '../extras/dimension.dart';
-import 'package:dav_school_app/screen/home.dart';
+import 'home.dart';
 
-const Color _bg = Color(0xFFF4F4F4);
+const Color _bg = Color(0xFFF4F1EE);
 const Color _surface = Colors.white;
-const Color _border = Color(0xFFFFF3E8);
-const Color _text = Color(0xFF1C2430);
-const Color _muted = Color(0xFF6D7786);
-const Color _primary = Color(0xFF75292A);
-// const Color _primaryDark = Color(0xFF1F5426);
+const Color _border = Color(0xFFE8E4DF);
+const Color _text = Color(0xFF1A1A2E);
+const Color _muted = Color(0xFF7E7E8F);
+const Color _primary = Color(0xFF7C1C1C);
+const Color _primaryDeep = Color(0xFF5A1212);
 const Color _danger = Color(0xFFE2572C);
 const String _logoAsset = 'assets/images/dav-logo.png';
 
@@ -43,8 +46,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<ConfigModel> _urlItems = [];
-  String _mainUrl = "";
+  List<ConfigModel> _urlItems = <ConfigModel>[];
+  String _mainUrl = '';
+
   @override
   void initState() {
     super.initState();
@@ -62,24 +66,28 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.08),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 0.08), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _animationController.forward();
   }
 
   Future<void> _loadConfig() async {
-    final Future<void> minDelay =
-        Future.delayed(Duration(milliseconds: AppDimens.durationSplashMin));
+    final Future<void> minDelay = Future.delayed(
+      Duration(milliseconds: AppDimens.durationSplashMin),
+    );
 
     try {
-      final results = await Future.wait([_post.fetchConfig(), minDelay]);
+      final results = await Future.wait(<Future<dynamic>>[
+        _post.fetchConfig(),
+        minDelay,
+      ]);
       _urlItems = results[0] as List<ConfigModel>;
-
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
@@ -101,36 +109,35 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       _errorMessage = null;
     });
 
-    for(int i = 0; i< _urlItems.length; i++){
-      if(_codeController.text == _urlItems[i].code){
+    _mainUrl = '';
+    for (int i = 0; i < _urlItems.length; i++) {
+      if (_codeController.text.trim() == _urlItems[i].code) {
         _mainUrl = _urlItems[i].url;
         break;
       }
     }
 
-    if(_mainUrl.isNotEmpty){
-      _login();
-    }else{
+    if (_mainUrl.isNotEmpty) {
+      await _login();
+    } else {
       setState(() {
         _isLoading = false;
         _errorMessage = 'No valid Code found';
       });
     }
-
-
   }
 
   Future<void> _login() async {
     try {
-      final dioClient = DioClient();
-
+      final DioClient dioClient = DioClient();
       dioClient.changeBaseUrl(_mainUrl);
+
+      final String dobForApi = _normalizeDobForApi(_dobController.text.trim());
 
       final LoginResponse response = await _post.login(
         LoginRequest(
           admNo: _admissionController.text.trim(),
-          dob: _dobController.text.trim(),
-
+          dob: dobForApi,
         ),
         _tempLoginUrl,
       );
@@ -141,7 +148,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       }
 
       if (!mounted) return;
-
       setState(() => _isLoading = false);
 
       final String message = response.message.isNotEmpty
@@ -158,7 +164,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       );
 
       if (response.success) {
-
         Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
             builder: (BuildContext context) => const HomePage(),
@@ -172,6 +177,49 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         _errorMessage = e.toString().replaceAll('Exception: ', '');
       });
     }
+  }
+
+  Future<void> _pickDateOfBirth() async {
+    final DateTime now = DateTime.now();
+    final DateTime initialDate = DateTime(now.year - 10, now.month, now.day);
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1950),
+      lastDate: now,
+    );
+
+    if (pickedDate == null) return;
+
+    _dobController.text = _formatDob(pickedDate);
+  }
+
+  String _formatDob(DateTime date) {
+    final String day = date.day.toString().padLeft(2, '0');
+    final String month = date.month.toString().padLeft(2, '0');
+    final String year = date.year.toString();
+    return '$day-$month-$year';
+  }
+
+  String _normalizeDobForApi(String raw) {
+    final RegExp pattern = RegExp(r'^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$');
+    final RegExpMatch? match = pattern.firstMatch(raw);
+    if (match == null) return raw;
+
+    final int first = int.parse(match.group(1)!);
+    final int second = int.parse(match.group(2)!);
+    final String year = match.group(3)!;
+
+    int day = first;
+    int month = second;
+
+    if (first <= 12 && second > 12) {
+      day = second;
+      month = first;
+    }
+
+    return '${day.toString().padLeft(2, '0')}-${month.toString().padLeft(2, '0')}-$year';
   }
 
   @override
@@ -192,47 +240,46 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           opacity: _fadeAnimation,
           child: SlideTransition(
             position: _slideAnimation,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingL,
-                  vertical: AppDimens.paddingL,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 430),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppDimens.paddingXL),
-                    decoration: BoxDecoration(
-                      color: _surface,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: _border),
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final double viewportHeight = constraints.maxHeight.isFinite
+                    ? constraints.maxHeight
+                    : MediaQuery.sizeOf(context).height;
+                final bool keyboardOpen =
+                    MediaQuery.viewInsetsOf(context).bottom > 0;
+
+                final double heroHeight = (viewportHeight *
+                        (keyboardOpen ? 0.38 : 0.45))
+                    .clamp(
+                  keyboardOpen ? 220.0 : 280.0,
+                  keyboardOpen ? 300.0 : 360.0,
+                );
+                final double sheetMinHeight = math.max(
+                  0.0,
+                  viewportHeight - heroHeight + 24,
+                );
+
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: viewportHeight,
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildHeader(),
-                          const SizedBox(height: AppDimens.paddingXXL),
-                          _buildLoginCard(),
-                          const SizedBox(height: AppDimens.paddingL),
-                          _buildLoginButton(),
-                          const SizedBox(height: AppDimens.paddingM),
-                          const Text(
-                            "Don't have an account? Contact school admin.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: _muted,
-                              fontSize: AppDimens.fontS,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: <Widget>[
+                        _buildHero(heroHeight, compact: keyboardOpen),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: heroHeight - 24,
+                          child: _buildSheet(sheetMinHeight),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -240,183 +287,273 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      children: [
-        SizedBox(
-          width: 120,
-          height: 120,
-          child: Image.asset(
-            _logoAsset,
-            fit: BoxFit.fitWidth,
-            errorBuilder: (_, __, ___) => const Icon(
-              Icons.school_rounded,
-              size: 50,
-              color: _primary,
+  Widget _buildHero(double height, {required bool compact}) {
+    return Container(
+      height: height,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0.9, -0.8),
+          end: Alignment(-0.7, 0.9),
+          colors: <Color>[_primary, _primaryDeep],
+        ),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          Positioned(
+            right: 12,
+            top: -24,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: AppDimens.paddingM),
-        const Text(
-          'Welcome Back!',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: _text,
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            height: 1,
+          Positioned(
+            left: 34,
+            bottom: -44,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                shape: BoxShape.circle,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: AppDimens.paddingS),
-        const Text(
-          'Please enter your details to sign in',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: _muted,
-            fontSize: AppDimens.fontM,
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: compact ? 16 : 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: compact ? 74 : 86,
+                    height: compact ? 74 : 86,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Image.asset(
+                      _logoAsset,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.school_rounded,
+                        color: _primary,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: compact ? 12 : 16),
+                  Text(
+                    'Welcome Back!',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: compact ? 32 : 38,
+                      fontWeight: FontWeight.w700,
+                      height: 1.04,
+                    ),
+                  ),
+                  SizedBox(height: compact ? 6 : 8),
+                  Text(
+                    'Sign in to your student portal',
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.dmSans(
+                      color: Colors.white.withValues(alpha: 0.65),
+                      fontSize: compact ? 13 : 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildLoginCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildInputField(
-          controller: _admissionController,
-          label: 'Admission Number',
-          hintText: 'Enter admission number',
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          prefixIcon: Icons.badge_outlined,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Admission number is required.';
-            }
-            return null;
-          },
+  Widget _buildSheet(double minHeight) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: Container(
+        constraints: BoxConstraints(minHeight: minHeight),
+        color: _surface,
+        padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              _buildInputField(
+                controller: _admissionController,
+                hintText: 'Admission Number',
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                prefixIcon: Icons.badge_outlined,
+                validator: (String? value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Admission number is required.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 14),
+              _buildInputField(
+                controller: _dobController,
+                hintText: 'Date of Birth (DD-MM-YYYY)',
+                keyboardType: TextInputType.datetime,
+                textInputAction: TextInputAction.next,
+                prefixIcon: Icons.calendar_month_outlined,
+                suffixIcon: Icons.date_range_rounded,
+                onSuffixTap: _pickDateOfBirth,
+                validator: (String? value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Date of birth is required.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 14),
+              _buildInputField(
+                controller: _codeController,
+                hintText: 'School Code',
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                prefixIcon: Icons.qr_code_2_rounded,
+                validator: (String? value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'School code is required.';
+                  }
+                  return null;
+                },
+              ),
+              if (_errorMessage != null) ...<Widget>[
+                const SizedBox(height: 12),
+                _buildErrorMessage(),
+              ],
+              const SizedBox(height: 18),
+              _buildLoginButton(),
+              const SizedBox(height: 16),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: GoogleFonts.dmSans(
+                    color: _muted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: <TextSpan>[
+                    const TextSpan(text: 'No account? '),
+                    TextSpan(
+                      text: 'Contact school admin',
+                      style: GoogleFonts.dmSans(
+                        color: _primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: AppDimens.paddingL),
-        _buildInputField(
-          controller: _dobController,
-          label: 'Date of Birth',
-          hintText: 'DD-MM-YYYY',
-          keyboardType: TextInputType.datetime,
-          textInputAction: TextInputAction.done,
-          prefixIcon: Icons.calendar_month_outlined,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Date of birth is required.';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: AppDimens.paddingL),
-        _buildInputField(
-          controller: _codeController,
-          label: 'School Code',
-          hintText: 'Enter school code',
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          prefixIcon: Icons.badge_outlined,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'School Code is required.';
-            }
-            return null;
-          },
-        ),
-        if (_errorMessage != null) ...[
-          const SizedBox(height: AppDimens.paddingS),
-          _buildErrorMessage(),
-        ],
-      ],
+      ),
     );
   }
 
   Widget _buildInputField({
     required TextEditingController controller,
-    required String label,
     required String hintText,
     required String? Function(String?) validator,
     required IconData prefixIcon,
     TextInputType keyboardType = TextInputType.text,
     TextInputAction textInputAction = TextInputAction.next,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    IconData? suffixIcon,
+    VoidCallback? onSuffixTap,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: _muted,
-            fontSize: AppDimens.fontS,
-            fontWeight: FontWeight.w600,
-          ),
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      readOnly: readOnly,
+      onTap: onTap,
+      style: GoogleFonts.dmSans(
+        color: _text,
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: GoogleFonts.dmSans(
+          color: _muted,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
         ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          validator: validator,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          style: const TextStyle(
-            color: _text,
-            fontSize: AppDimens.fontXL,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: const TextStyle(
-              color: Color(0xFF9AA3B2),
-              fontSize: AppDimens.fontM,
-            ),
-            prefixIcon: Icon(prefixIcon, color: _muted),
-            filled: true,
-            fillColor: const Color(0xFFF8FAF8),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingM,
-              vertical: AppDimens.paddingM,
-            ),
-            enabledBorder: _buildInputBorder(_border),
-            focusedBorder: _buildInputBorder(_primary),
-            errorBorder: _buildInputBorder(_danger),
-            focusedErrorBorder: _buildInputBorder(_danger),
-            errorStyle: const TextStyle(
-              color: _danger,
-              fontSize: AppDimens.fontS,
-            ),
-          ),
+        prefixIcon: Icon(prefixIcon, color: _muted, size: 20),
+        suffixIcon: suffixIcon == null
+            ? null
+            : IconButton(
+                onPressed: onSuffixTap,
+                icon: Icon(suffixIcon, color: _muted, size: 20),
+              ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 16,
         ),
-      ],
+        enabledBorder: _buildInputBorder(_border),
+        focusedBorder: _buildInputBorder(_primary),
+        errorBorder: _buildInputBorder(_danger),
+        focusedErrorBorder: _buildInputBorder(_danger),
+        errorStyle: GoogleFonts.dmSans(
+          color: _danger,
+          fontSize: AppDimens.fontS,
+        ),
+      ),
     );
   }
 
   OutlineInputBorder _buildInputBorder(Color color) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: color, width: 1.4),
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: color, width: 1.5),
     );
   }
 
   Widget _buildErrorMessage() {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingM),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF2EE),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFFFD7CA)),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           const Icon(Icons.error_outline, color: _danger, size: 20),
           const SizedBox(width: AppDimens.paddingS),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: _danger,
                 fontSize: AppDimens.fontS,
               ),
@@ -428,26 +565,42 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildLoginButton() {
-    return SizedBox(
+    return Container(
       height: 56,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment(0.9, -0.8),
+          end: Alignment(-0.7, 0.9),
+          colors: <Color>[_primary, _primaryDeep],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x597C1C1C),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
       child: ElevatedButton(
         onPressed: _isLoading ? null : _submit,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
+          backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: _primary.withOpacity(0.4),
+          disabledBackgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: const TextStyle(
-            fontSize: AppDimens.fontXL,
+          textStyle: GoogleFonts.outfit(
+            fontSize: 17,
             fontWeight: FontWeight.w700,
           ),
         ),
         child: _isLoading
             ? const SizedBox(
-                width: AppDimens.loaderSize,
-                height: AppDimens.loaderSize,
+                width: 22,
+                height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.2,
                   color: Colors.white,
@@ -458,3 +611,4 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     );
   }
 }
+

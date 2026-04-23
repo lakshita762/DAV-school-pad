@@ -1,5 +1,3 @@
-// import 'dart:ffi';
-
 class StudentDetailResponse {
   final bool success;
   final String message;
@@ -44,6 +42,12 @@ class StudentDetailData {
   final String fatherName;
   final String motherName;
   final String schoolName;
+  final int schoolId;
+  final String schoolAddress1;
+  final String schoolAddress2;
+  final String schoolPhone;
+  final String schoolEmail;
+  final String schoolWebsite;
   final String board;
   final String academicYear;
   final String teacherName;
@@ -56,17 +60,21 @@ class StudentDetailData {
   final double totalAmount;
   final double attendancePercent;
   final String dueDate;
-  final String adm_no;
+  final String admNo;
   final String active;
   final String email;
-  final String conveyance, hostel;
+  final String conveyance;
+  final String hostel;
+  final int courseId;
+  final int secId;
+  final int branchId;
 
   StudentDetailData({
     required this.studentName,
     required this.studentId,
     required this.admissionDate,
     required this.className,
-    required this.adm_no,
+    required this.admNo,
     required this.active,
     required this.section,
     required this.category,
@@ -74,6 +82,12 @@ class StudentDetailData {
     required this.fatherName,
     required this.motherName,
     required this.schoolName,
+    required this.schoolId,
+    required this.schoolAddress1,
+    required this.schoolAddress2,
+    required this.schoolPhone,
+    required this.schoolEmail,
+    required this.schoolWebsite,
     required this.board,
     required this.academicYear,
     required this.teacherName,
@@ -88,7 +102,10 @@ class StudentDetailData {
     required this.dueDate,
     required this.email,
     required this.conveyance,
-    required this.hostel
+    required this.hostel,
+    required this.courseId,
+    required this.secId,
+    required this.branchId,
   });
 
   double get paidProgress {
@@ -102,6 +119,15 @@ class StudentDetailData {
   }
 
   factory StudentDetailData.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> courseMap =
+        _asMap(json['course']) ?? <String, dynamic>{};
+    final Map<String, dynamic> sectionMap =
+        _asMap(json['section']) ?? <String, dynamic>{};
+    final Map<String, dynamic> schoolMap =
+        _asMap(json['school_details']) ??
+        _asMap(json['school']) ??
+        <String, dynamic>{};
+
     return StudentDetailData(
       studentId: _firstString(json, const ['student_id', 'admission_no', 'id']),
       studentName: _firstString(json, const [
@@ -109,49 +135,75 @@ class StudentDetailData {
         'name',
         'full_name',
       ]),
-      adm_no: _firstString(json, const ['adm_no']),
+      admNo: _firstString(json, const ['adm_no']),
       active: _firstString(json, const ['active']),
       dob: _firstString(json, const ['dob', 'date_of_birth']),
-      fatherName: _firstString(
-        json,
-        const ['father_name', 'father', 'fathers_name'],
-      ),
-      motherName: _firstString(
-        json,
-        const ['mother_name', 'mother', 'mothers_name'],
-      ),
+      fatherName: _firstString(json, const [
+        'father_name',
+        'father',
+        'fathers_name',
+      ]),
+      motherName: _firstString(json, const [
+        'mother_name',
+        'mother',
+        'mothers_name',
+      ]),
       email: _firstString(json, const ['email']),
       contact: _firstString(json, const ['contact', 'phone', 'mobile']),
       conveyance: _firstString(json, const ['conveyance']),
       hostel: _firstString(json, const ['hostel']),
-      admissionDate: _firstString(
-        json,
-        const ['admission_date', 'date_of_admission', 'admissionDate'],
-      ),
-      className: _firstString(
-        json,
-        const ['course', 'class_name', 'class'],
-      ),
-      section: _firstString(json, const ['section']),
+      admissionDate: _firstString(json, const [
+        'admission_date',
+        'date_of_admission',
+        'admissionDate',
+      ]),
+      className: _firstString(json, const ['class_name', 'class']).isNotEmpty
+          ? _firstString(json, const ['class_name', 'class'])
+          : _firstString(courseMap, const ['course_name', 'name', 'title']),
+      section: _firstString(json, const ['section']).isNotEmpty
+          ? _firstString(json, const ['section'])
+          : _firstString(sectionMap, const ['name', 'section_name', 'title']),
       category: _firstString(json, const ['category']),
       rollNo: _firstString(json, const ['roll_no', 'roll_number']),
-
-      schoolName: _firstString(json, const ['school_name', 'school']),
+      schoolName: _firstString(schoolMap, const [
+        'name',
+        'school_name',
+        'school',
+      ]),
+      schoolId: _firstInt(schoolMap, const ['id']),
+      schoolAddress1: _firstString(schoolMap, const [
+        'add1',
+        'address1',
+        'address_line_1',
+      ]),
+      schoolAddress2: _firstString(schoolMap, const [
+        'add2',
+        'address2',
+        'address_line_2',
+      ]),
+      schoolPhone: _firstString(schoolMap, const ['phone', 'mobile']),
+      schoolEmail: _firstString(schoolMap, const ['email']),
+      schoolWebsite: _firstString(schoolMap, const ['website']),
       board: _firstString(json, const ['board']),
       academicYear: _firstString(json, const ['academic_year', 'year']),
       teacherName: _firstString(json, const ['class_teacher', 'teacher_name']),
-
       gender: _firstString(json, const ['gender']),
       bloodGroup: _firstString(json, const ['blood_group']),
-
-      balanceDue: _firstDouble(json, const ['balance_due', 'due_amount', 'balance_amount']),
+      balanceDue: _firstDouble(json, const [
+        'balance_due',
+        'due_amount',
+        'balance_amount',
+      ]),
       paidAmount: _firstDouble(json, const ['paid_amount', 'paid']),
       totalAmount: _firstDouble(json, const ['total_amount', 'total_fee']),
-      attendancePercent: _firstDouble(
-        json,
-        const ['attendance_percent', 'attendance'],
-      ),
+      attendancePercent: _firstDouble(json, const [
+        'attendance_percent',
+        'attendance',
+      ]),
       dueDate: _firstString(json, const ['due_date']),
+      courseId: _firstInt(json, const ['course_id']),
+      secId: _firstInt(json, const ['sec_id']),
+      branchId: _firstInt(json, const ['branch_id']),
     );
   }
 
@@ -166,7 +218,7 @@ class StudentDetailData {
     return '';
   }
 
-   static int _firstInt(Map<String, dynamic> json, List<String> keys) {
+  static int _firstInt(Map<String, dynamic> json, List<String> keys) {
     for (final String key in keys) {
       if (!json.containsKey(key)) continue;
       final int value = _asInt(json[key]);
@@ -175,8 +227,6 @@ class StudentDetailData {
     }
     return 0;
   }
-
-
 
   static double _firstDouble(Map<String, dynamic> json, List<String> keys) {
     for (final String key in keys) {
@@ -191,7 +241,6 @@ class StudentDetailData {
   static bool _isZeroLike(dynamic value) {
     if (value == null) return false;
     if (value is num) return value == 0;
-    if (value is int) return value == 0;
     return value.toString().trim() == '0';
   }
 
@@ -205,6 +254,7 @@ class StudentDetailData {
         'name',
         'title',
         'label',
+        'course_name',
         'class_name',
         'value',
       ];
@@ -216,6 +266,12 @@ class StudentDetailData {
       return '';
     }
     return value.toString();
+  }
+
+  static Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
   }
 }
 
