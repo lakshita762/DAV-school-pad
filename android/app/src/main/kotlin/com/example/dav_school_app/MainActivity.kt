@@ -1,4 +1,4 @@
-package com.example.dav_school_app
+package com.infowayit.schoolkonnect
 
 import io.flutter.embedding.android.FlutterActivity
 
