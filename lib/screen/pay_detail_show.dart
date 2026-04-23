@@ -1,4 +1,4 @@
-import 'package:dav_school_app/screen/payment_screen.dart';
+import 'package:school_konnect/screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 
 class PayDetailShow extends StatefulWidget {

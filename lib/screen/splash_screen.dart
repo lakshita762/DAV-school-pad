@@ -199,7 +199,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildTitle() {
     return const Text(
-      'DAV School Pad',
+      'School Konnect',
       style: TextStyle(
         color: _titleColor,
         fontSize: AppDimens.fontTitle,

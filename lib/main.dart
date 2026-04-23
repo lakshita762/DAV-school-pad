@@ -1,5 +1,5 @@
-import 'package:dav_school_app/extras/color.dart';
-import 'package:dav_school_app/screen/splash_screen.dart';
+import 'package:school_konnect/extras/color.dart';
+import 'package:school_konnect/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     final TextTheme baseTextTheme = ThemeData.light().textTheme;
 
     return MaterialApp(
-      title: 'DAV School',
+      title: 'School Konnect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

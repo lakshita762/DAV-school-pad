@@ -1,7 +1,7 @@
 class Strings {
   Strings._();
 
-  static const String appName            = 'DAV School Pad';
+  static const String appName            = 'School Konnect';
   static const String appTagline         = 'Loading your experience';
 
   static const String statusInitializing = 'Initializing...';

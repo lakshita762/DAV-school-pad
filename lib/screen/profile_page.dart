@@ -180,8 +180,8 @@ class ProfilePage extends StatelessWidget {
                           ),
                           _InfoRowData(
                             Icons.numbers_outlined,
-                            'School ID',
-                            _displayValueInt(student.schoolId),
+                            'Branch Code',
+                            _displayValue(student.shortName),
                           ),
                           _InfoRowData(
                             Icons.location_on_outlined,

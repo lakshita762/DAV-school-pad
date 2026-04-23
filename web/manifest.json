@@ -1,6 +1,6 @@
 {
-    "name": "dav_school_app",
-    "short_name": "dav_school_app",
+    "name": "school_konnect",
+    "short_name": "school_konnect",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

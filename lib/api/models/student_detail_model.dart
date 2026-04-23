@@ -42,6 +42,7 @@ class StudentDetailData {
   final String fatherName;
   final String motherName;
   final String schoolName;
+  final String shortName;
   final int schoolId;
   final String schoolAddress1;
   final String schoolAddress2;
@@ -82,6 +83,7 @@ class StudentDetailData {
     required this.fatherName,
     required this.motherName,
     required this.schoolName,
+    required this.shortName,
     required this.schoolId,
     required this.schoolAddress1,
     required this.schoolAddress2,
@@ -170,6 +172,17 @@ class StudentDetailData {
         'school_name',
         'school',
       ]),
+      shortName: _firstString(schoolMap, const [
+        'short_name',
+        'Short_name',
+        'shortName',
+      ]).isNotEmpty
+          ? _firstString(schoolMap, const [
+              'short_name',
+              'Short_name',
+              'shortName',
+            ])
+          : _firstString(json, const ['short_name', 'Short_name', 'shortName']),
       schoolId: _firstInt(schoolMap, const ['id']),
       schoolAddress1: _firstString(schoolMap, const [
         'add1',

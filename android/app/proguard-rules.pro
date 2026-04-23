@@ -1,0 +1,3 @@
+-dontwarn com.google.android.apps.nbu.paisa.inapp.client.api.PaymentsClient
+-dontwarn com.google.android.apps.nbu.paisa.inapp.client.api.Wallet
+-dontwarn com.google.android.apps.nbu.paisa.inapp.client.api.WalletUtils

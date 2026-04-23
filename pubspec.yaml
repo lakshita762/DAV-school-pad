@@ -1,7 +1,7 @@
-name: dav_school_app
+name: school_konnect 
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.8.0
@@ -18,12 +18,23 @@ dependencies:
   url_launcher: ^6.3.2
   google_fonts: ^6.2.1
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/dav-logo.png"
+  adaptive_icon_foreground: "assets/images/dav-logo.png"
+  adaptive_icon_background: "#ffffff"
+  min_sdk_android: 21

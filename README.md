@@ -1,4 +1,4 @@
-# dav_school_app
+# school_konnect
 
 A new Flutter project.
 

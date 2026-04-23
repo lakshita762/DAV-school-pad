@@ -6,7 +6,7 @@
 
     <application
         tools:replace="android:label"
-        android:label="dav_school_app"
+        android:label="School Konnect"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

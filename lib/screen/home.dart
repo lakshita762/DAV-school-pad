@@ -1,4 +1,4 @@
-import 'package:dav_school_app/screen/splash_screen.dart';
+﻿import 'package:school_konnect/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -392,6 +392,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       fatherName: '',
       motherName: '',
       schoolName: '',
+      shortName: '',
       schoolId: 0,
       schoolAddress1: '',
       schoolAddress2: '',

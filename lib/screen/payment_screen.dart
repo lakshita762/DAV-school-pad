@@ -1,4 +1,4 @@
-import 'package:dav_school_app/api/post.dart';
+import 'package:school_konnect/api/post.dart';
 import 'package:flutter/material.dart';
 import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';

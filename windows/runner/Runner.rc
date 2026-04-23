@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.infowayit.schoolkonnect" "\0"
-            VALUE "FileDescription", "dav_school_app" "\0"
+            VALUE "FileDescription", "school_konnect" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "dav_school_app" "\0"
+            VALUE "InternalName", "school_konnect" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.infowayit.schoolkonnect. All rights reserved." "\0"
-            VALUE "OriginalFilename", "dav_school_app.exe" "\0"
-            VALUE "ProductName", "dav_school_app" "\0"
+            VALUE "OriginalFilename", "school_konnect.exe" "\0"
+            VALUE "ProductName", "school_konnect" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
