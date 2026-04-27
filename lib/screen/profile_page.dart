@@ -91,21 +91,21 @@ class ProfilePage extends StatelessWidget {
                             'Roll No.',
                             _displayValue(student.rollNo),
                           ),
-                          _InfoRowData(
-                            Icons.assignment_ind_outlined,
-                            'Course ID',
-                            _displayValueInt(student.courseId),
-                          ),
-                          _InfoRowData(
-                            Icons.numbers_outlined,
-                            'Section ID',
-                            _displayValueInt(student.secId),
-                          ),
-                          _InfoRowData(
-                            Icons.account_tree_outlined,
-                            'Branch ID',
-                            _displayValueInt(student.branchId),
-                          ),
+                          // _InfoRowData(
+                          //   Icons.assignment_ind_outlined,
+                          //   'Course ID',
+                          //   _displayValueInt(student.courseId),
+                          // ),
+                          // _InfoRowData(
+                          //   Icons.numbers_outlined,
+                          //   'Section ID',
+                          //   _displayValueInt(student.secId),
+                          // ),
+                          // _InfoRowData(
+                          //   Icons.account_tree_outlined,
+                          //   'Branch ID',
+                          //   _displayValueInt(student.branchId),
+                          // ),
                           _InfoRowData(
                             Icons.toggle_on_outlined,
                             'Active',
@@ -440,6 +440,7 @@ class _InfoRow extends StatelessWidget {
         color: const Color(0xFFFCFBF9),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
             width: 32,
@@ -453,8 +454,11 @@ class _InfoRow extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Expanded(
+            flex: 5,
             child: Text(
               item.label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.dmSans(
                 color: _text,
                 fontSize: 13,
@@ -463,11 +467,12 @@ class _InfoRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Flexible(
+          Expanded(
+            flex: 5,
             child: Text(
               item.value,
-              textAlign: TextAlign.right,
-              maxLines: 2,
+              textAlign: TextAlign.left,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.dmSans(
                 color: isNotSet ? _muted : _primarySoft,

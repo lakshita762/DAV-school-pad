@@ -112,10 +112,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     _mainUrl = '';
     for (int i = 0; i < _urlItems.length; i++) {
       if (_codeController.text.trim() == _urlItems[i].code) {
-        _mainUrl = _urlItems[i].url;
+        _mainUrl = _urlItems[i].url.substring(0, _urlItems[i].url.length - 1);
         break;
       }
     }
+    print(_mainUrl);
 
     if (_mainUrl.isNotEmpty) {
       await _login();
