@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static String baseUrl = 'https://dav8.erpproviders.in/login';
+  static String baseUrl = 'http://school.loc';
 
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;

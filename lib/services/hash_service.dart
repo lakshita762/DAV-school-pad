@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HashService {
-  static const String _baseUrl = 'https://dav8.erpproviders.in/login';
+  static const String _baseUrl = 'http://school.loc';
 
   /// Called by PayU SDK via generateHash() callback
   /// Sends hashString to backend → returns { hashName, hash }

@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -456,16 +456,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
-                  children: <TextSpan>[
-                    const TextSpan(text: 'No account? '),
-                    TextSpan(
-                      text: 'Contact school admin',
-                      style: GoogleFonts.dmSans(
-                        color: _primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
+                  // children: <TextSpan>[
+                  //   // const TextSpan(text: 'No account? '),
+                  //   // TextSpan(
+                  //   //   text: 'Contact school admin',
+                  //   //   style: GoogleFonts.dmSans(
+                  //   //     color: _primary,
+                  //   //     fontWeight: FontWeight.w700,
+                  //   //   ),
+                  //   ),
+                  // ],
                 ),
               ),
             ],
