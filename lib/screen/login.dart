@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,13 +11,13 @@ import '../api/post.dart';
 import '../extras/dimension.dart';
 import 'home.dart';
 
-const Color _bg = Color(0xFFF4F1EE);
+const Color _bg = Color(0xFFF3F7FB);
 const Color _surface = Colors.white;
-const Color _border = Color(0xFFE8E4DF);
-const Color _text = Color(0xFF1A1A2E);
-const Color _muted = Color(0xFF7E7E8F);
-const Color _primary = Color(0xFF7C1C1C);
-const Color _primaryDeep = Color(0xFF5A1212);
+const Color _border = Color(0xFFD8E3EE);
+const Color _text = Color(0xFF0C1F41);
+const Color _muted = Color(0xFF5D7085);
+const Color _primary = Color(0xFF0C1F41);
+const Color _primaryDeep = Color(0xFF07152D);
 const Color _danger = Color(0xFFE2572C);
 const String _logoAsset = 'assets/images/dav-logo.png';
 
@@ -136,10 +136,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       final String dobForApi = _normalizeDobForApi(_dobController.text.trim());
 
       final LoginResponse response = await _post.login(
-        LoginRequest(
-          admNo: _admissionController.text.trim(),
-          dob: dobForApi,
-        ),
+        LoginRequest(admNo: _admissionController.text.trim(), dob: dobForApi),
         _tempLoginUrl,
       );
 
@@ -249,12 +246,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 final bool keyboardOpen =
                     MediaQuery.viewInsetsOf(context).bottom > 0;
 
-                final double heroHeight = (viewportHeight *
-                        (keyboardOpen ? 0.38 : 0.45))
-                    .clamp(
-                  keyboardOpen ? 220.0 : 280.0,
-                  keyboardOpen ? 300.0 : 360.0,
-                );
+                final double heroHeight =
+                    (viewportHeight * (keyboardOpen ? 0.38 : 0.45)).clamp(
+                      keyboardOpen ? 220.0 : 280.0,
+                      keyboardOpen ? 300.0 : 360.0,
+                    );
                 final double sheetMinHeight = math.max(
                   0.0,
                   viewportHeight - heroHeight + 24,
@@ -263,9 +259,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 return SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: viewportHeight,
-                    ),
+                    constraints: BoxConstraints(minHeight: viewportHeight),
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: <Widget>[
@@ -577,7 +571,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         borderRadius: BorderRadius.circular(14),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x597C1C1C),
+            color: Color(0x590C1F41),
             blurRadius: 20,
             offset: Offset(0, 8),
           ),
@@ -612,4 +606,3 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     );
   }
 }
-

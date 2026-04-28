@@ -69,6 +69,9 @@ class StudentDetailData {
   final int courseId;
   final int secId;
   final int branchId;
+  final String photographPath;
+  final int photographAttachmentId;
+  final String photographFileExt;
 
   StudentDetailData({
     required this.studentName,
@@ -108,6 +111,9 @@ class StudentDetailData {
     required this.courseId,
     required this.secId,
     required this.branchId,
+    required this.photographPath,
+    required this.photographAttachmentId,
+    required this.photographFileExt,
   });
 
   double get paidProgress {
@@ -120,6 +126,51 @@ class StudentDetailData {
     return value;
   }
 
+  StudentDetailData copyWith({String? dob, String? contact, String? email}) {
+    return StudentDetailData(
+      studentName: studentName,
+      studentId: studentId,
+      admissionDate: admissionDate,
+      className: className,
+      admNo: admNo,
+      active: active,
+      section: section,
+      category: category,
+      rollNo: rollNo,
+      fatherName: fatherName,
+      motherName: motherName,
+      schoolName: schoolName,
+      shortName: shortName,
+      schoolId: schoolId,
+      schoolAddress1: schoolAddress1,
+      schoolAddress2: schoolAddress2,
+      schoolPhone: schoolPhone,
+      schoolEmail: schoolEmail,
+      schoolWebsite: schoolWebsite,
+      board: board,
+      academicYear: academicYear,
+      teacherName: teacherName,
+      dob: dob ?? this.dob,
+      gender: gender,
+      bloodGroup: bloodGroup,
+      contact: contact ?? this.contact,
+      balanceDue: balanceDue,
+      paidAmount: paidAmount,
+      totalAmount: totalAmount,
+      attendancePercent: attendancePercent,
+      dueDate: dueDate,
+      email: email ?? this.email,
+      conveyance: conveyance,
+      hostel: hostel,
+      courseId: courseId,
+      secId: secId,
+      branchId: branchId,
+      photographPath: photographPath,
+      photographAttachmentId: photographAttachmentId,
+      photographFileExt: photographFileExt,
+    );
+  }
+
   factory StudentDetailData.fromJson(Map<String, dynamic> json) {
     final Map<String, dynamic> courseMap =
         _asMap(json['course']) ?? <String, dynamic>{};
@@ -129,6 +180,10 @@ class StudentDetailData {
         _asMap(json['school_details']) ??
         _asMap(json['school']) ??
         <String, dynamic>{};
+    final Map<String, dynamic> photographMap =
+        _asMap(json['photograph']) ?? <String, dynamic>{};
+    final Map<String, dynamic> attachmentMap =
+        _asMap(photographMap['attachment']) ?? <String, dynamic>{};
 
     return StudentDetailData(
       studentId: _firstString(json, const ['student_id', 'admission_no', 'id']),
@@ -172,11 +227,12 @@ class StudentDetailData {
         'school_name',
         'school',
       ]),
-      shortName: _firstString(schoolMap, const [
-        'short_name',
-        'Short_name',
-        'shortName',
-      ]).isNotEmpty
+      shortName:
+          _firstString(schoolMap, const [
+            'short_name',
+            'Short_name',
+            'shortName',
+          ]).isNotEmpty
           ? _firstString(schoolMap, const [
               'short_name',
               'Short_name',
@@ -217,6 +273,44 @@ class StudentDetailData {
       courseId: _firstInt(json, const ['course_id']),
       secId: _firstInt(json, const ['sec_id']),
       branchId: _firstInt(json, const ['branch_id']),
+      photographPath:
+          _firstString(json, const [
+            'photograph_url',
+            'photo_url',
+            'image_url',
+          ]).isNotEmpty
+          ? _firstString(json, const [
+              'photograph_url',
+              'photo_url',
+              'image_url',
+            ])
+          : _firstString(photographMap, const [
+              'url',
+              'full_url',
+              'path',
+              'file_path',
+              'file_url',
+            ]).isNotEmpty
+          ? _firstString(photographMap, const [
+              'url',
+              'full_url',
+              'path',
+              'file_path',
+              'file_url',
+            ])
+          : _firstString(attachmentMap, const [
+              'url',
+              'full_url',
+              'path',
+              'file_path',
+              'file_url',
+              'file_name',
+            ]),
+      photographAttachmentId:
+          _firstInt(photographMap, const ['attachment_id']) != 0
+          ? _firstInt(photographMap, const ['attachment_id'])
+          : _firstInt(attachmentMap, const ['id', 'attachment_id']),
+      photographFileExt: _firstString(attachmentMap, const ['file_ext']),
     );
   }
 

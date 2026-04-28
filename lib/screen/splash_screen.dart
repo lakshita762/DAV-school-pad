@@ -6,13 +6,13 @@ import '../extras/string.dart';
 import 'home.dart';
 import 'login.dart';
 
-const Color _bgTop = Color(0xFFFFF3E8);
-const Color _bgBottom = Color(0xFFF4F4F4);
-const Color _blobOne = Color(0xFFFFF3E8);
-const Color _blobTwo = Color(0xFFF4F4F4);
-const Color _primary = Color(0xFF75292A);
-const Color _titleColor = Color(0xFF172338);
-const Color _subtleText = Color(0xFF61708A);
+const Color _bgTop = Color(0xFFEFF5FA);
+const Color _bgBottom = Color(0xFFF3F7FB);
+const Color _blobOne = Color(0xFFEFF5FA);
+const Color _blobTwo = Color(0xFFF3F7FB);
+const Color _primary = Color(0xFF0C1F41);
+const Color _titleColor = Color(0xFF0C1F41);
+const Color _subtleText = Color(0xFF5D7085);
 const Color _error = Color(0xFFE2572C);
 
 class SplashScreen extends StatefulWidget {
@@ -69,8 +69,9 @@ class _SplashScreenState extends State<SplashScreen>
       if (token.isEmpty) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder<void>(
-            transitionDuration:
-                Duration(milliseconds: AppDimens.durationTransition),
+            transitionDuration: Duration(
+              milliseconds: AppDimens.durationTransition,
+            ),
             pageBuilder: (_, __, ___) => const Login(items: []),
             transitionsBuilder: (_, animation, __, child) =>
                 FadeTransition(opacity: animation, child: child),
@@ -127,12 +128,16 @@ class _SplashScreenState extends State<SplashScreen>
                 builder: (BuildContext context, Widget? child) {
                   return FadeTransition(
                     opacity: _fadeAnimation,
-                    child: ScaleTransition(scale: _scaleAnimation, child: child),
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: child,
+                    ),
                   );
                 },
                 child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: AppDimens.paddingL),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: AppDimens.paddingL,
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppDimens.paddingXL,
                     vertical: AppDimens.paddingXXL,
@@ -140,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.86),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFFFF3E8)),
+                    border: Border.all(color: const Color(0xFFEFF5FA)),
                     boxShadow: const <BoxShadow>[
                       BoxShadow(
                         color: Color(0x22000000),
@@ -178,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen>
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[Color(0xFF75292A), Color(0xFF75292A)],
+          colors: <Color>[Color(0xFF0C1F41), Color(0xFF8CAAC9)],
         ),
         borderRadius: BorderRadius.circular(AppDimens.logoRadius + 8),
         boxShadow: <BoxShadow>[
@@ -263,10 +268,7 @@ class _SplashScreenState extends State<SplashScreen>
           child: Text(
             _statusMessage,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _error,
-              fontSize: AppDimens.fontS,
-            ),
+            style: const TextStyle(color: _error, fontSize: AppDimens.fontS),
           ),
         ),
         const SizedBox(height: AppDimens.paddingXL),
@@ -300,10 +302,7 @@ class _SplashBlob extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

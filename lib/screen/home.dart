@@ -10,14 +10,14 @@ import '../api/models/student_detail_model.dart';
 import '../extras/string.dart';
 import 'profile_page.dart';
 
-const Color _bg = Color(0xFFF4F1EE);
+const Color _bg = Color(0xFFF3F7FB);
 const Color _surface = Colors.white;
-const Color _borderSoft = Color(0xFFE8E4DF);
-const Color _text = Color(0xFF1A1A2E);
-const Color _muted = Color(0xFF7E7E8F);
-const Color _primary = Color(0xFF7C1C1C);
-const Color _primaryDeep = Color(0xFF5A1212);
-const Color _primarySoft = Color(0xFF9E3535);
+const Color _borderSoft = Color(0xFFD8E3EE);
+const Color _text = Color(0xFF0C1F41);
+const Color _muted = Color(0xFF5D7085);
+const Color _primary = Color(0xFF0C1F41);
+const Color _primaryDeep = Color(0xFF07152D);
+const Color _primarySoft = Color(0xFF8CAAC9);
 const Color _danger = Color(0xFFE2572C);
 const Color _success = Color(0xFF16A34A);
 
@@ -419,6 +419,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       courseId: 0,
       secId: 0,
       branchId: 0,
+      photographPath: '',
+      photographAttachmentId: 0,
+      photographFileExt: '',
     );
   }
 }
@@ -480,7 +483,7 @@ class _PressableQuickCardState extends State<_PressableQuickCard> {
                   height: 44,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: const Color(0xFFFDF1F1),
+                    color: const Color(0xFFEFF5FA),
                   ),
                   alignment: Alignment.center,
                   child: Icon(widget.icon, color: _primary, size: 20),
@@ -691,7 +694,7 @@ class _BalanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x267C1C1C),
+            color: Color(0x268CAAC9),
             blurRadius: 30,
             offset: Offset(0, 8),
           ),
@@ -782,7 +785,7 @@ class _PaymentItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFFDF1F1),
+              color: const Color(0xFFEFF5FA),
               borderRadius: BorderRadius.circular(12),
             ),
             alignment: Alignment.center,
@@ -851,7 +854,7 @@ class _GradientActionButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x597C1C1C),
+            color: Color(0x590C1F41),
             blurRadius: 20,
             offset: Offset(0, 8),
           ),

@@ -29,13 +29,12 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen>
     implements PayUCheckoutProProtocol {
-
   late PayUCheckoutProFlutter _checkoutPro;
 
   static const String _merchantKey = 'Pd4KWd'; // public key, safe in app
   static const String _environment = '1'; // 1 = Test, 0 = Production
   final Post _post = Post();
-  String  token = "";
+  String token = "";
   @override
   void initState() {
     super.initState();
@@ -46,7 +45,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   }
 
   Future<void> _startPayment() async {
-     token = await getUserToken();
+    token = await getUserToken();
     print('sdsd');
     final txnId = DateTime.now().millisecondsSinceEpoch.toString();
     print('sdsd 1');
@@ -72,7 +71,7 @@ class _PaymentScreenState extends State<PaymentScreen>
     // Step 4: Launch CheckoutPro
     _checkoutPro.openCheckoutScreen(
       payUPaymentParams: payUPaymentParams,
-      payUCheckoutProConfig:<String, dynamic>{},// optional config
+      payUCheckoutProConfig: <String, dynamic>{}, // optional config
     );
 
     print('sdsd 3');
@@ -164,16 +163,16 @@ class _PaymentScreenState extends State<PaymentScreen>
       debugPrint('PayU hash request: $response');
 
       final String hashName =
-      response[PayUHashConstantsKeys.hashName] as String;
+          response[PayUHashConstantsKeys.hashName] as String;
 
       final String hashString =
-      response[PayUHashConstantsKeys.hashString] as String;
+          response[PayUHashConstantsKeys.hashString] as String;
 
       final String? hashType =
-      response[PayUHashConstantsKeys.hashType] as String?;
+          response[PayUHashConstantsKeys.hashType] as String?;
 
       final String? postSalt =
-      response[PayUHashConstantsKeys.postSalt] as String?;
+          response[PayUHashConstantsKeys.postSalt] as String?;
 
       final String hash = LocalHashService.generateHash(
         hashName: hashName,
@@ -184,9 +183,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
       debugPrint('Generated hash: $hash');
 
-      _checkoutPro.hashGenerated(hash: {
-        hashName: hash,
-      });
+      _checkoutPro.hashGenerated(hash: {hashName: hash});
     } catch (e) {
       debugPrint('generateHash error: $e');
     }
@@ -215,7 +212,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
+      backgroundColor: const Color(0xFFF3F7FB),
       body: Column(
         children: [
           Row(
@@ -225,13 +222,13 @@ class _PaymentScreenState extends State<PaymentScreen>
                 height: 50,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFFFF3E8),
+                  color: Color(0xFFEFF5FA),
                 ),
                 alignment: Alignment.center,
                 child: const Text(
                   'initials',
-                  style: const TextStyle(
-                    color: Color(0xFF75292A),
+                  style: TextStyle(
+                    color: Color(0xFF0C1F41),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -245,21 +242,19 @@ class _PaymentScreenState extends State<PaymentScreen>
                       'Good morning, Student',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-
                   ],
                 ),
               ),
             ],
           ),
-          const Text("sdsdsd")
+          const Text("sdsdsd"),
         ],
-      )
+      ),
     );
   }
 }
