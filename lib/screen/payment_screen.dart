@@ -1,10 +1,9 @@
-import 'package:school_konnect/api/post.dart';
 import 'package:flutter/material.dart';
 import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../extras/color.dart';
 import '../extras/dimension.dart';
-import '../services/hash_service.dart';
 import '../services/local_hash_service.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -33,7 +32,6 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   static const String _merchantKey = 'Pd4KWd'; // public key, safe in app
   static const String _environment = '1'; // 1 = Test, 0 = Production
-  final Post _post = Post();
   String token = "";
   @override
   void initState() {
@@ -212,7 +210,7 @@ class _PaymentScreenState extends State<PaymentScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F7FB),
+      backgroundColor: AppColors.scaffold,
       body: Column(
         children: [
           Row(
@@ -222,13 +220,13 @@ class _PaymentScreenState extends State<PaymentScreen>
                 height: 50,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFEFF5FA),
+                  color: AppColors.iconBackground,
                 ),
                 alignment: Alignment.center,
                 child: const Text(
                   'initials',
                   style: TextStyle(
-                    color: Color(0xFF0C1F41),
+                    color: AppColors.iconColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

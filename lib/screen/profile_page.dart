@@ -7,17 +7,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/client.dart';
 import '../api/post.dart';
 import '../api/models/student_detail_model.dart';
+import '../extras/color.dart';
 import '../extras/string.dart';
 
-const Color _bg = Color(0xFFF3F7FB);
-const Color _surface = Colors.white;
-const Color _borderSoft = Color(0xFFD8E3EE);
-const Color _text = Color(0xFF0C1F41);
-const Color _muted = Color(0xFF5D7085);
-const Color _primary = Color(0xFF0C1F41);
-const Color _primaryDeep = Color(0xFF07152D);
-const Color _primarySoft = Color(0xFF8CAAC9);
-const Color _danger = Color(0xFFE2572C);
+const Color _bg = AppColors.scaffold;
+const Color _surface = AppColors.card;
+const Color _borderSoft = Color(0xFFCCCCCC);
+const Color _text = AppColors.textPrimary;
+const Color _muted = AppColors.textSecondary;
+const Color _primary = AppColors.primary;
+const Color _primaryDeep = AppColors.primaryDeep;
+const Color _primarySoft = AppColors.primarySoft;
+const Color _danger = AppColors.errorText;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.student});
@@ -377,30 +378,6 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
-          Positioned(
-            right: 12,
-            top: -24,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.09),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 34,
-            bottom: -50,
-            child: Container(
-              width: 108,
-              height: 108,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.07),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           Column(
             children: <Widget>[
               Row(
@@ -412,12 +389,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 34,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.white.withValues(alpha: 0.15),
+                        color: AppColors.onPrimary.withValues(alpha: 0.15),
                       ),
                       child: const Icon(
                         Icons.arrow_back_rounded,
                         size: 18,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     ),
                   ),
@@ -437,7 +414,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 name,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.onPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
@@ -447,7 +424,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 email,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: AppColors.onPrimary.withValues(alpha: 0.6),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -613,7 +590,7 @@ class _MissingInfoForm extends StatelessWidget {
         border: Border.all(color: _borderSoft),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x0F000000),
+            color: AppColors.cardShadow,
             blurRadius: 12,
             offset: Offset(0, 2),
           ),
@@ -631,14 +608,14 @@ class _MissingInfoForm extends StatelessWidget {
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF5FA),
+                    color: AppColors.iconBackground,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
                   child: const Icon(
                     Icons.edit_note_rounded,
                     size: 18,
-                    color: _primary,
+                    color: AppColors.iconColor,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -698,14 +675,14 @@ class _MissingInfoForm extends StatelessWidget {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: AppColors.onPrimary,
                         ),
                       )
                     : const Icon(Icons.check_rounded, size: 18),
                 label: Text(isSaving ? 'Saving' : 'Save Details'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                   disabledBackgroundColor: _primarySoft,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -819,9 +796,9 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
       height: 72,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        color: Colors.white.withValues(alpha: 0.16),
+        color: AppColors.onPrimary.withValues(alpha: 0.16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.4),
+          color: AppColors.onPrimary.withValues(alpha: 0.4),
           width: 1.4,
         ),
       ),
@@ -835,7 +812,7 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
               height: 18,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.white,
+                color: AppColors.onPrimary,
               ),
             )
           : _AvatarInitials(initials: widget.initials),
@@ -853,7 +830,7 @@ class _AvatarInitials extends StatelessWidget {
     return Text(
       initials,
       style: GoogleFonts.outfit(
-        color: Colors.white,
+        color: AppColors.onPrimary,
         fontSize: 24,
         fontWeight: FontWeight.w700,
       ),
@@ -895,9 +872,9 @@ class _ProfileInput extends StatelessWidget {
       ),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: _primary, size: 18),
+        prefixIcon: Icon(icon, color: AppColors.iconColor, size: 18),
         filled: true,
-        fillColor: const Color(0xFFFCFBF9),
+        fillColor: AppColors.card,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 14,
@@ -936,13 +913,13 @@ class _InfoSection extends StatelessWidget {
         color: _surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: _borderSoft),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x0F000000),
-            blurRadius: 12,
-            offset: Offset(0, 2),
-          ),
-        ],
+        // boxShadow: const <BoxShadow>[
+        //   BoxShadow(
+        //     color: AppColors.cardShadow,
+        //     blurRadius: 12,
+        //     offset: Offset(0, 2),
+        //   ),
+        // ],
       ),
       child: Column(
         children: <Widget>[
@@ -1001,7 +978,7 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: const Color(0xFFFCFBF9),
+        color: AppColors.card,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1010,11 +987,11 @@ class _InfoRow extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF5FA),
+              color: AppColors.iconBackground,
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Icon(item.icon, size: 16, color: _primary),
+            child: Icon(item.icon, size: 16, color: AppColors.iconColor),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1039,7 +1016,7 @@ class _InfoRow extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.dmSans(
-                color: isNotSet ? _muted : _primarySoft,
+                color: isNotSet ? _muted : _text,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

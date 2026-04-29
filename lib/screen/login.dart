@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,18 +8,19 @@ import '../api/client.dart';
 import '../api/models/config_model.dart';
 import '../api/models/login_model.dart';
 import '../api/post.dart';
+import '../extras/color.dart';
 import '../extras/dimension.dart';
 import 'home.dart';
 
-const Color _bg = Color(0xFFF3F7FB);
-const Color _surface = Colors.white;
-const Color _border = Color(0xFFD8E3EE);
-const Color _text = Color(0xFF0C1F41);
-const Color _muted = Color(0xFF5D7085);
-const Color _primary = Color(0xFF0C1F41);
-const Color _primaryDeep = Color(0xFF07152D);
-const Color _danger = Color(0xFFE2572C);
-const String _logoAsset = 'assets/images/dav-logo.png';
+const Color _bg = AppColors.scaffold;
+const Color _surface = AppColors.card;
+const Color _border = Color(0xFFCCCCCC);
+const Color _text = AppColors.textPrimary;
+const Color _muted = AppColors.textSecondary;
+const Color _primary = AppColors.primary;
+const Color _primaryDeep = AppColors.primaryDeep;
+const Color _danger = AppColors.errorText;
+const String _logoAsset = 'assets/images/schoolkonnect-login.jpg';
 
 class Login extends StatefulWidget {
   const Login({super.key, required this.items});
@@ -296,30 +297,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
-          Positioned(
-            right: 12,
-            top: -24,
-            child: Container(
-              width: 140,
-              height: 140,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 34,
-            bottom: -44,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           Align(
             alignment: Alignment.center,
             child: Padding(
@@ -331,43 +308,38 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    width: compact ? 74 : 86,
-                    height: compact ? 74 : 86,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: compact ? 116 : 138,
                     child: Image.asset(
                       _logoAsset,
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) => const Icon(
                         Icons.school_rounded,
-                        color: _primary,
-                        size: 30,
+                        color: AppColors.onPrimary,
+                        size: 76,
                       ),
                     ),
                   ),
                   SizedBox(height: compact ? 12 : 16),
-                  Text(
-                    'Welcome Back!',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontSize: compact ? 32 : 38,
-                      fontWeight: FontWeight.w700,
-                      height: 1.04,
-                    ),
-                  ),
+                  // Text(
+                  //   'Welcome Back!',
+                  //   textAlign: TextAlign.center,
+                  //   style: GoogleFonts.outfit(
+                  //     color: AppColors.onPrimary,
+                  //     fontSize: compact ? 32 : 38,
+                  //     fontWeight: FontWeight.w700,
+                  //     height: 1.04,
+                  //   ),
+                  // ),
                   SizedBox(height: compact ? 6 : 8),
                   Text(
-                    'Sign in to your student portal',
+                    'Welcome, Sign in to your student portal.',
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.dmSans(
-                      color: Colors.white.withValues(alpha: 0.65),
+                      color: AppColors.onPrimary.withValues(alpha: 0.65),
                       fontSize: compact ? 13 : 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -501,15 +473,15 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: Icon(prefixIcon, color: _muted, size: 20),
+        prefixIcon: Icon(prefixIcon, color: AppColors.iconColor, size: 20),
         suffixIcon: suffixIcon == null
             ? null
             : IconButton(
                 onPressed: onSuffixTap,
-                icon: Icon(suffixIcon, color: _muted, size: 20),
+                icon: Icon(suffixIcon, color: AppColors.iconColor, size: 20),
               ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.card,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 16,
@@ -537,9 +509,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF2EE),
+        color: AppColors.errorBackground,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFFFD7CA)),
+        border: Border.all(color: AppColors.errorBorder),
       ),
       child: Row(
         children: <Widget>[
@@ -566,22 +538,22 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         gradient: const LinearGradient(
           begin: Alignment(0.9, -0.8),
           end: Alignment(-0.7, 0.9),
-          colors: <Color>[_primary, _primaryDeep],
+          colors: <Color>[Color(0xFF074417), Color(0xFF074417)],
         ),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x590C1F41),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
+        // boxShadow: const <BoxShadow>[
+        //   BoxShadow(
+        //     color: AppColors.primaryShadow,
+        //     blurRadius: 20,
+        //     offset: Offset(0, 8),
+        //   ),
+        // ],
       ),
       child: ElevatedButton(
         onPressed: _isLoading ? null : _submit,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onPrimary,
           disabledBackgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
@@ -598,7 +570,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.2,
-                  color: Colors.white,
+                  color: AppColors.onPrimary,
                 ),
               )
             : const Text('Sign in'),

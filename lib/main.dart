@@ -19,10 +19,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.light,
-        ),
+        colorScheme:
+            ColorScheme.fromSeed(
+              seedColor: AppColors.primary,
+              brightness: Brightness.light,
+            ).copyWith(
+              primary: AppColors.primary,
+              secondary: AppColors.secondary,
+              surface: AppColors.card,
+            ),
         scaffoldBackgroundColor: AppColors.scaffold,
         textTheme: GoogleFonts.dmSansTextTheme(baseTextTheme).copyWith(
           headlineLarge: GoogleFonts.outfit(
@@ -77,7 +82,7 @@ class MyApp extends StatelessWidget {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AppColors.card,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(

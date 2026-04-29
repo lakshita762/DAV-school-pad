@@ -7,19 +7,20 @@ import 'package:url_launcher/url_launcher.dart';
 import '../api/client.dart';
 import '../api/get.dart';
 import '../api/models/student_detail_model.dart';
+import '../extras/color.dart';
 import '../extras/string.dart';
 import 'profile_page.dart';
 
-const Color _bg = Color(0xFFF3F7FB);
-const Color _surface = Colors.white;
-const Color _borderSoft = Color(0xFFD8E3EE);
-const Color _text = Color(0xFF0C1F41);
-const Color _muted = Color(0xFF5D7085);
-const Color _primary = Color(0xFF0C1F41);
-const Color _primaryDeep = Color(0xFF07152D);
-const Color _primarySoft = Color(0xFF8CAAC9);
-const Color _danger = Color(0xFFE2572C);
-const Color _success = Color(0xFF16A34A);
+const Color _bg = AppColors.scaffold;
+const Color _surface = AppColors.card;
+const Color _borderSoft = Color(0xFFCCCCCC);
+const Color _text = AppColors.textPrimary;
+const Color _muted = AppColors.textSecondary;
+const Color _primary = AppColors.primary;
+const Color _primaryDeep = AppColors.primaryDeep;
+const Color _primarySoft = AppColors.primarySoft;
+const Color _danger = AppColors.errorText;
+const Color _success = AppColors.success;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -171,30 +172,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
-          Positioned(
-            right: 10,
-            top: -26,
-            child: Container(
-              width: 130,
-              height: 130,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.09),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 34,
-            bottom: -54,
-            child: Container(
-              width: 116,
-              height: 116,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.07),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -203,15 +180,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white.withValues(alpha: 0.18),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.iconColor,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       initials,
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
@@ -236,12 +213,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       width: 34,
                       height: 34,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(80),
+                        color: AppColors.onPrimary.withValues(alpha: 0.15),
                       ),
                       child: const Icon(
                         Icons.logout_rounded,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                         size: 18,
                       ),
                     ),
@@ -252,7 +229,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               Text(
                 'Good Morning,',
                 style: GoogleFonts.dmSans(
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: AppColors.onPrimary.withValues(alpha: 0.6),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -263,7 +240,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.onPrimary,
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
                   height: 1.1,
@@ -277,21 +254,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
-                  color: Colors.white.withValues(alpha: 0.18),
+                  color: AppColors.onPrimary.withValues(alpha: 0.18),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     const Icon(
                       Icons.class_outlined,
-                      color: Colors.white,
+                      color: AppColors.onPrimary,
                       size: 14,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Section $sectionText',
                       style: GoogleFonts.dmSans(
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -310,7 +287,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Transform.translate(
       offset: const Offset(0, -24),
       child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
         child: Container(
           color: _bg,
           padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
@@ -464,11 +441,11 @@ class _PressableQuickCardState extends State<_PressableQuickCard> {
           },
           child: Ink(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card,
               borderRadius: BorderRadius.circular(20),
               boxShadow: const <BoxShadow>[
                 BoxShadow(
-                  color: Color(0x0F000000),
+                  color: AppColors.cardShadow,
                   blurRadius: 12,
                   offset: Offset(0, 2),
                 ),
@@ -482,11 +459,16 @@ class _PressableQuickCardState extends State<_PressableQuickCard> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: const Color(0xFFEFF5FA),
+                    shape: BoxShape.circle,
+                    color: AppColors.iconBackground,
+                    border: Border.all(color: AppColors.iconColor),
                   ),
                   alignment: Alignment.center,
-                  child: Icon(widget.icon, color: _primary, size: 20),
+                  child: Icon(
+                    widget.icon,
+                    color: AppColors.iconColor,
+                    size: 20,
+                  ),
                 ),
                 const Spacer(),
                 Text(
@@ -623,18 +605,6 @@ class PaymentsPage extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
-          Positioned(
-            right: 12,
-            top: -24,
-            child: Container(
-              width: 104,
-              height: 104,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
             child: Align(
@@ -646,12 +616,12 @@ class PaymentsPage extends StatelessWidget {
                   height: 34,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: AppColors.onPrimary.withValues(alpha: 0.15),
                   ),
                   child: const Icon(
                     Icons.arrow_back_rounded,
                     size: 18,
-                    color: Colors.white,
+                    color: AppColors.onPrimary,
                   ),
                 ),
               ),
@@ -690,11 +660,11 @@ class _BalanceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x268CAAC9),
+            color: AppColors.primaryBadgeBg,
             blurRadius: 30,
             offset: Offset(0, 8),
           ),
@@ -728,8 +698,8 @@ class _BalanceCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: isClear
-                  ? const Color(0xFFECFDF3)
-                  : const Color(0xFFFFF2F2),
+                  ? AppColors.successBackground
+                  : AppColors.paymentDueBackground,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
@@ -773,7 +743,7 @@ class _PaymentItem extends StatelessWidget {
         border: Border.all(color: _borderSoft),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x0D000000),
+            color: AppColors.subtleShadow,
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -784,12 +754,12 @@ class _PaymentItem extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEFF5FA),
-              borderRadius: BorderRadius.circular(12),
+            decoration: const BoxDecoration(
+              color: AppColors.iconBackground,
+              shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Icon(icon, color: _primary, size: 18),
+            child: Icon(icon, color: AppColors.iconColor, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -849,22 +819,15 @@ class _GradientActionButton extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment(0.9, -0.8),
           end: Alignment(-0.7, 0.9),
-          colors: <Color>[_primary, _primaryDeep],
+          colors: <Color>[_primarySoft, _primarySoft],
         ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x590C1F41),
-            blurRadius: 20,
-            offset: Offset(0, 8),
-          ),
-        ],
       ),
       child: ElevatedButton.icon(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onPrimary,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
