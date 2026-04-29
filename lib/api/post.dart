@@ -48,7 +48,7 @@ class Post {
 
     try {
       final Response<dynamic> response = await _dio.post(
-        '/update-student',
+        '/api/update-student',
         data: FormData.fromMap(fields),
         options: Options(
           headers: <String, dynamic>{'Authorization': 'Bearer $token'},
