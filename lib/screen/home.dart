@@ -59,35 +59,53 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _loadStudentDetail() async {
+  setState(() {
+    _isLoading = true;
+    _error = null;
+  });
+
+  try {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString(_tokenStorageKey) ?? '';
+
+    if (token.isEmpty) {
+      throw Exception('No auth token found. Please log in again.');
+    }
+
+    final StudentDetailResponse response =
+    await _getApi.fetchStudentDetail(token: token);
+
+    if (!mounted) return;
+
     setState(() {
-      _isLoading = true;
-      _error = null;
+      _student = response.data;
+      _isLoading = false;
     });
 
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String token = prefs.getString(_tokenStorageKey) ?? '';
-      if (token.isEmpty) {
-        throw Exception('No auth token found. Please log in again.');
-      }
+  } catch (e) {
+    if (e is UnauthorizedException) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_tokenStorageKey, '');
 
-      final StudentDetailResponse response = await _getApi.fetchStudentDetail(
-        token: token,
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const SplashScreen(),
+        ),
+            (route) => false,
       );
-
-      if (!mounted) return;
-      setState(() {
-        _student = response.data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString().replaceAll('Exception: ', '');
-        _isLoading = false;
-      });
+      return;
     }
+
+    if (!mounted) return;
+
+    setState(() {
+      _error = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

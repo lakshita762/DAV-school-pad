@@ -11,6 +11,7 @@ class Post {
   Future<LoginResponse> login(LoginRequest request, String url) async {
     try {
       final response = await _dio.post(url, data: request.toJson());
+      print( 'Login response data: ${response.data}'); // Debug print
 
       return LoginResponse.fromJson(response.data);
     } on DioException catch (e) {

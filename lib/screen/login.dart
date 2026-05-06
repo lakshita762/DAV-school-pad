@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:package_info_plus/package_info_plus.dart';
 import '../api/client.dart';
 import '../api/models/config_model.dart';
 import '../api/models/login_model.dart';
@@ -133,11 +133,12 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     try {
       final DioClient dioClient = DioClient();
       dioClient.changeBaseUrl(_mainUrl);
-
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String buildNumber = packageInfo.buildNumber;
       final String dobForApi = _normalizeDobForApi(_dobController.text.trim());
 
       final LoginResponse response = await _post.login(
-        LoginRequest(admNo: _admissionController.text.trim(), dob: dobForApi),
+        LoginRequest(admNo: _admissionController.text.trim(), dob: dobForApi, buildNo: buildNumber),
         _tempLoginUrl,
       );
 
@@ -153,12 +154,12 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           ? response.message
           : response.success
           ? 'Login successful.'
-          : 'Login failed.';
+          : response.error;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: response.success ? _primary : _danger,
+          backgroundColor: response.success ? _primary : const Color.fromARGB(255, 236, 15, 15),
         ),
       );
 

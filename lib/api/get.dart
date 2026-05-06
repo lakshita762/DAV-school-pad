@@ -41,9 +41,7 @@ class GetApi {
         final String message = _asMap(body)['message']?.toString() ??
             'Something went wrong';
         if (statusCode == 401) {
-          return Exception(
-            Strings.errorServer(401, 'Unauthorized. Please log in again.'),
-          );
+          return UnauthorizedException();
         }
         return Exception('Server error ($statusCode): $message');
       case DioExceptionType.connectionError:
